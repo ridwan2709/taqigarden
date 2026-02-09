@@ -232,9 +232,13 @@
         </div>
         
         <nav class="py-4">
-        <a href="dashboard.html" class="nav-link active">
+        <a href="dashboard.html" class="nav-link">
             <i class="fas fa-leaf w-6 mr-3 text-center"></i>
             <span>Plant Collection</span>
+        </a>
+        <a href="dashboard.html?page=article" class="nav-link">
+            <i class="fas fa-newspaper w-6 mr-3 text-center"></i>
+            <span>Article Management</span>
         </a>
         <a href="#" id="logoutBtn" class="nav-link text-red-600 hover:bg-red-50 hover:text-red-700 mt-8">
             <i class="fas fa-sign-out-alt w-6 mr-3 text-center"></i>
@@ -258,7 +262,7 @@
                         <i class="fas fa-bars text-xl w-6 h-6 flex items-center justify-center"></i>
                         <span class="sr-only">Toggle menu</span>
                     </button>
-                    <h1 class="text-xl font-semibold text-gray-800">Plant Collection</h1>
+                    <h1 class="text-xl font-semibold text-gray-800">Dashboard</h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative">
@@ -314,9 +318,18 @@
         });
 
         // Load the collection page content
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const page = urlParams.get('page') || 'koleksi';
+        const pageElement = page+'-content.html';
+
+        console.log(pageElement);
+        
+        
+
         async function loadCollectionPage() {
             try {
-                const response = await fetch('koleksi-content.html');
+                const response = await fetch(pageElement);
                 const html = await response.text();
                 
                 // Create a temporary div to hold the content
