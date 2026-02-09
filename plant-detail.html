@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Details - Taqi Garden</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --primary-green: #2d4a3e;
+            --accent-green: #4f7962;
+            --cream: #f9f7f2;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream);
+            color: #333;
+        }
+
+        h1, h2, h3, .brand-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 2px 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+            background-color: #128c7e;
+        }
+    </style>
+</head>
+<body class="bg-[#f9f7f2]">
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20am%20interested%20in%20your%20plant%20collection." target="_blank" class="whatsapp-btn" title="Chat WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2">
+                <div class="flex flex-col leading-none">
+                    <span class="text-2xl font-bold text-[#2d4a3e] tracking-tighter">TAQI</span>
+                    <span class="text-xs tracking-[0.3em] font-semibold text-gray-500 uppercase">Garden</span>
+                </div>
+            </a>
+            <ul class="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-widest text-gray-700">
+                <li><a href="index.html" class="hover:text-[#4f7962]">Home</a></li>
+                <li><a href="koleksi.html" class="hover:text-[#4f7962]">Collection</a></li>
+                <li><a href="index.html#about" class="hover:text-[#4f7962]">About Us</a></li>
+            </ul>
+            <button id="menu-toggle" class="md:hidden text-gray-700"><i class="fas fa-bars text-xl"></i></button>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-8 text-2xl font-bold uppercase tracking-widest translate-x-full md:hidden">
+        <button id="menu-close" class="absolute top-6 right-6 text-3xl">&times;</button>
+        <a href="index.html" class="hover:text-[#4f7962]" onclick="toggleMenu()">Home</a>
+        <a href="koleksi.html" class="hover:text-[#4f7962]" onclick="toggleMenu()">Collection</a>
+        <a href="index.html#about" class="hover:text-[#4f7962]" onclick="toggleMenu()">About Us</a>
+    </div>
+
+    <!-- Plant Detail Section -->
+    <section class="py-12 md:py-20">
+        <div class="container mx-auto px-6">
+            <div id="loading" class="text-center py-20 text-[#2d4a3e]">
+                <i class="fas fa-circle-notch fa-spin text-4xl"></i>
+                <p class="mt-4">Loading plant details...</p>
+            </div>
+
+            <div id="plantDetail" class="hidden bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="md:flex">
+                    <!-- Plant Image -->
+                    <div class="md:w-1/2">
+                        <img id="plantImage" src="" alt="Plant" class="w-full h-full object-cover aspect-square">
+                    </div>
+                    
+                    <!-- Plant Info -->
+                    <div class="p-8 md:w-1/2">
+                        <span id="plantCategory" class="inline-block px-3 py-1 text-xs font-semibold text-white bg-[#4f7962] rounded-full mb-4">
+                            Category
+                        </span>
+                        <h1 id="plantName" class="text-3xl md:text-4xl font-bold mb-4">Plant Name</h1>
+                        <p id="plantPrice" class="text-2xl text-[#2d4a3e] font-bold mb-6">Loading price...</p>
+                        
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold mb-3">Description</h3>
+                            <p id="plantDescription" class="text-gray-600 mb-6">Loading description...</p>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <p class="text-sm text-gray-500">Light</p>
+                                    <p id="plantLight" class="font-medium">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Water</p>
+                                    <p id="plantWater" class="font-medium">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Humidity</p>
+                                    <p id="plantHumidity" class="font-medium">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Toxicity</p>
+                                    <p id="plantToxicity" class="font-medium">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="contactBtn" class="w-full bg-[#2d4a3e] text-white py-3 rounded-lg hover:bg-[#4f7962] transition font-semibold">
+                            <i class="fab fa-whatsapp mr-2"></i> Contact Us on WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="hidden text-center py-20">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                <h2 class="text-2xl font-bold mb-4">Plant Not Found</h2>
+                <p class="text-gray-600 mb-6">The plant you're looking for doesn't exist or has been removed.</p>
+                <a href="koleksi.html" class="inline-block bg-[#2d4a3e] text-white px-6 py-2 rounded-lg hover:bg-[#4f7962] transition">
+                    Back to Collection
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Similar Plants Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl text-center mb-12">You May Also Like</h2>
+            <div id="similarPlants" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Similar plants will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#2d4a3e] text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <div class="brand-font text-3xl mb-4">TAQI Garden</div>
+            <p class="text-gray-400 text-sm mb-8">Best quality, safe delivery, peace of mind.</p>
+            <p class="text-xs text-gray-500">&copy; 2026 Taqi Garden Indonesia. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc,
+            collection,
+            query,
+            where,
+            limit,
+            getDocs
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        // Firebase configuration (same as other pages)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA51F2pPZUWmdOaYqsihD78LTrvnXDqXn4",
+            authDomain: "taqi-4a756.firebaseapp.com",
+            projectId: "taqi-4a756",
+            storageBucket: "taqi-4a756.firebasestorage.app",
+            messagingSenderId: "836265831490",
+            appId: "1:836265831490:web:38277600db742f145451db"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Get plant ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const plantId = urlParams.get('id');
+
+        // Format price to IDR
+        function formatPrice(price) {
+            if (!price && price !== 0) return 'Price not available';
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(price);
+        }
+
+        // Format category name
+        function formatCategory(category) {
+            if (!category) return 'Plant';
+            return category.charAt(0).toUpperCase() + category.slice(1);
+        }
+
+        // Load plant details
+        async function loadPlantDetails() {
+            if (!plantId) {
+                showError();
+                return;
+            }
+
+            try {
+                const docRef = doc(db, 'artifacts/taqi-4a756/public/data/plants', plantId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const plant = { id: docSnap.id, ...docSnap.data() };
+                    displayPlantDetails(plant);
+                    loadSimilarPlants(plant.category, plantId);
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error("Error loading plant:", error);
+                showError();
+            }
+        }
+
+        // Display plant details
+        function displayPlantDetails(plant) {
+            document.title = `${plant.name} - Taqi Garden`;
+            
+            // Set basic info
+            document.getElementById('plantName').textContent = plant.name;
+            document.getElementById('plantPrice').textContent = formatPrice(plant.price);
+            document.getElementById('plantCategory').textContent = formatCategory(plant.category);
+            
+            // Set image
+            const plantImage = document.getElementById('plantImage');
+            plantImage.src = plant.imageUrl || plant.img || 'https://via.placeholder.com/600x600?text=No+Image';
+            plantImage.alt = plant.name;
+            
+            // Set description and details
+            document.getElementById('plantDescription').textContent = plant.description || 'No description available.';
+            document.getElementById('plantLight').textContent = plant.light || 'Medium to bright, indirect light';
+            document.getElementById('plantWater').textContent = plant.water || 'Water when top inch of soil is dry';
+            document.getElementById('plantHumidity').textContent = plant.humidity || 'Average to high humidity';
+            document.getElementById('plantToxicity').textContent = plant.toxicity || 'Non-toxic to pets';
+            
+            // Update WhatsApp button
+            const whatsappBtn = document.getElementById('contactBtn');
+            const message = `Hello Taqi Garden, I'm interested in ${plant.name}. Can you tell me more about it?`;
+            whatsappBtn.onclick = () => {
+                window.open(`https://wa.me/6285862907657?text=${encodeURIComponent(message)}`, '_blank');
+            };
+            
+            // Show the content
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('plantDetail').classList.remove('hidden');
+        }
+
+        // Load similar plants
+        async function loadSimilarPlants(category, excludeId) {
+            if (!category) return;
+            
+            try {
+                const q = query(
+                    collection(db, 'artifacts/taqi-4a756/public/data/plants'),
+                    where('category', '==', category),
+                    limit(4)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                const similarPlants = [];
+                
+                querySnapshot.forEach((doc) => {
+                    if (doc.id !== excludeId) {
+                        similarPlants.push({ id: doc.id, ...doc.data() });
+                    }
+                });
+                
+                displaySimilarPlants(similarPlants);
+            } catch (error) {
+                console.error("Error loading similar plants:", error);
+            }
+        }
+
+        // Display similar plants
+        function displaySimilarPlants(plants) {
+            const container = document.getElementById('similarPlants');
+            
+            if (!plants.length) {
+                container.innerHTML = '<p class="col-span-4 text-center text-gray-500">No similar plants found.</p>';
+                return;
+            }
+            
+            const plantsHTML = plants.map(plant => `
+                <div class="group">
+                    <a href="plant-detail.html?id=${plant.id}" class="block">
+                        <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+                            <div class="aspect-square bg-gray-100 overflow-hidden">
+                                <img src="${plant.imageUrl || plant.img || 'https://via.placeholder.com/300x300?text=No+Image'}" 
+                                     alt="${plant.name}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg mb-1">${plant.name}</h3>
+                                <p class="text-[#4f7962] font-bold">${formatPrice(plant.price)}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `).join('');
+            
+            container.innerHTML = plantsHTML;
+        }
+
+        // Show error message
+        function showError() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('errorMessage').classList.remove('hidden');
+        }
+
+        // Toggle mobile menu
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('translate-x-full');
+            mobileMenu.classList.toggle('translate-x-0');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Toggle mobile menu
+            document.getElementById('menu-toggle').addEventListener('click', toggleMenu);
+            document.getElementById('menu-close').addEventListener('click', toggleMenu);
+            
+            // Load plant details
+            loadPlantDetails();
+        });
+    </script>
+</body>
+</html>
