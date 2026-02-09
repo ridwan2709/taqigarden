@@ -121,11 +121,18 @@
         z-index: 30;
         opacity: 0;
         transition: opacity 0.3s ease;
+        backdrop-filter: blur(2px);
     }
     
     .sidebar-overlay.show {
         display: block;
         opacity: 1;
+    }
+    
+    /* Prevent scrolling when menu is open */
+    body.menu-open {
+        overflow: hidden;
+        height: 100vh;
     }
     
     /* Scrollbar styling */
@@ -148,8 +155,11 @@
 </style>
 </head>
 <body class="flex">
+    <!-- Mobile Menu Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    
     <!-- Sidebar -->
-    <aside class="sidebar bg-white shadow-lg fixed top-0 left-0 h-full z-20">
+    <aside class="sidebar bg-white shadow-lg fixed top-0 left-0 h-full z-40">
         <div class="p-6">
             <div class="flex items-center space-x-2">
                 <div class="text-2xl font-bold text-[#2d4a3e] brand-font">TAQI</div>
@@ -168,8 +178,9 @@
         </a>
     </nav>
     </aside>
-    <button id="sidebarToggle" class="md:hidden fixed top-4 left-4 z-30 p-2 bg-white rounded-lg shadow-md text-gray-600">
-    <i class="fas fa-bars text-xl"></i>
+    <button id="sidebarToggle" class="md:hidden fixed top-2 left-4 z-50 p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg text-gray-700 hover:bg-white hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-opacity-50">
+        <i class="fas fa-bars text-lg"></i>
+        <span class="sr-only">Toggle menu</span>
     </button>
     <!-- Update the main content -->
 
@@ -177,10 +188,11 @@
     <div class="content w-full min-h-screen">
         <!-- Top Navigation -->
         <header class="bg-white shadow-sm">
-            <div class="flex items-center justify-between p-4">
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="text-gray-500 hover:text-[#2d4a3e] mr-4 md:hidden">
-                        <i class="fas fa-bars text-xl"></i>
+            <div class="flex items-center justify-between px-4 h-16">
+                <div class="flex items-center space-x-3">
+                    <button id="headerSidebarToggle" class="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-opacity-50">
+                        <i class="fas fa-bars text-xl w-6 h-6 flex items-center justify-center"></i>
+                        <span class="sr-only">Toggle menu</span>
                     </button>
                     <h1 class="text-xl font-semibold text-gray-800">Plant Collection</h1>
                 </div>
@@ -347,69 +359,79 @@
         });
 
         // Mobile sidebar toggle
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
-            document.querySelector('.content').classList.toggle('expanded');
-        });
-         // Toggle sidebar on mobile
-    const sidebar = document.querySelector('.sidebar');
-    const content = document.querySelector('.content');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const isMobile = window.innerWidth < 768;
-    // function toggleSidebar() {
-    //     if (isMobile) {
-    //         sidebar.classList.toggle('show');
-    //     } else {
-    //         sidebar.classList.toggle('collapsed');
-    //         content.classList.toggle('expanded');
-    //     }
-    // }
-    sidebarToggle.addEventListener('click', toggleSidebar);
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', (e) => {
-        if (isMobile && 
-            !sidebar.contains(e.target) && 
-            !sidebarToggle.contains(e.target) &&
-            sidebar.classList.contains('show')) {
-            sidebar.classList.remove('show');
-        }
-    });
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        const isNowMobile = window.innerWidth < 768;
-        if (isMobile !== isNowMobile) {
-            if (isNowMobile) {
-                sidebar.classList.remove('collapsed');
-                content.classList.remove('expanded');
-                sidebar.classList.remove('show');
-            } else {
-                sidebar.classList.remove('show');
-            }
-            isMobile = isNowMobile;
-        }
-    });
-    // Add this after your existing JavaScript
-const overlay = document.createElement('div');
-overlay.className = 'sidebar-overlay';
-document.body.appendChild(overlay);
-function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const content = document.querySelector('.content');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        function toggleSidebar() {
     if (window.innerWidth < 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+        const isOpening = !sidebar.classList.contains('show');
+        document.body.classList.toggle('menu-open', isOpening);
+        sidebarOverlay.classList.toggle('show', isOpening);
+        sidebar.classList.toggle('show', isOpening);
+        
+        // Toggle visibility of the toggle buttons
+        [sidebarToggle, headerSidebarToggle].forEach(button => {
+            if (button) {
+                button.style.display = isOpening ? 'none' : 'block';
+            }
+        });
     } else {
         sidebar.classList.toggle('collapsed');
         content.classList.toggle('expanded');
     }
 }
-// Close sidebar when clicking overlay
-overlay.addEventListener('click', () => {
-    if (window.innerWidth < 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        document.body.style.overflow = '';
-    }
-});
+        
+        // Toggle sidebar when clicking the menu button
+        sidebarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSidebar();
+        });
+        
+        // Close sidebar when clicking overlay
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768 && 
+                !sidebar.contains(e.target) && 
+                !sidebarToggle.contains(e.target)) {
+                if (sidebar.classList.contains('show')) {
+                    toggleSidebar();
+                }
+            }
+        });
+        
+        // Close menu when clicking a nav link on mobile
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+        
+        // Handle window resize
+        function handleResize() {
+            if (window.innerWidth >= 768) {
+                // Reset mobile menu state
+                document.body.classList.remove('menu-open');
+                sidebarOverlay.classList.remove('show');
+                sidebar.classList.remove('show');
+            } else if (!sidebar.classList.contains('show')) {
+                sidebar.classList.add('collapsed');
+                content.classList.add('expanded');
+            }
+        }
+        
+        window.addEventListener('resize', handleResize);
+        
+        // Initialize
+        if (window.innerWidth < 768) {
+            sidebar.classList.add('collapsed');
+            content.classList.add('expanded');
+        }
     </script>
 </body>
 </html>
