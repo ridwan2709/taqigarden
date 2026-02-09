@@ -2,12 +2,31 @@
 <section class="py-6">
     <div class="container mx-auto">
         <!-- Filter & Search -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div class="flex flex-wrap gap-2" id="filterContainer">
-                <button class="filter-btn active px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" onclick="filterProducts('semua')">Semua</button>
-                <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" onclick="filterProducts('indoor')">Indoor</button>
-                <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" onclick="filterProducts('langka')">Langka</button>
-                <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" onclick="filterProducts('sukulen')">Sukulen</button>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 w-full">
+            <div class="relative w-full md:w-auto">
+                <button id="filterToggle" class="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#2d4a3e] text-[#2d4a3e] hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                </button>
+                <div id="filterDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 border border-gray-200">
+                    <div class="p-2 space-y-1">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                    onclick="filterProducts('semua'); return false;">
+                        <i class="fas fa-th-large mr-2 w-5 text-center"></i> Semua
+                    </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                    onclick="filterProducts('indoor'); return false;">
+                        <i class="fas fa-tree mr-2 w-5 text-center"></i> Indoor
+                    </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                    onclick="filterProducts('langka'); return false;">
+                        <i class="fas fa-seedling mr-2 w-5 text-center"></i> Langka
+                    </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                    onclick="filterProducts('sukulen'); return false;">
+                        <i class="fas fa-leaf mr-2 w-5 text-center"></i> Sukulen
+                    </div>
+                </div>
             </div>
             <div class="relative w-full md:w-64">
                 <input type="text" id="searchInput" placeholder="Cari tanaman..." 
@@ -506,10 +525,7 @@
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                         onerror="this.onerror=null; this.src='img/placeholder.jpg';">
                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                        <button onclick="event.stopPropagation(); viewPlantDetail('${product.id}')" 
-                                class="bg-white text-[#2d4a3e] px-4 py-2 rounded-full font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-opacity-90">
-                            <i class="fas fa-eye mr-2"></i>Lihat Detail
-                        </button>
+                    
                     </div>
                 </div>
                 <div class="p-4">
@@ -636,26 +652,68 @@
             });
         }
     };
-    // Make filterProducts available globally
-   window.filterProducts = function(category) {
-    // Update active filter button
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(category) || 
-            (category === 'semua' && btn.textContent.toLowerCase() === 'semua'));
-    });
-    
-    // Filter products
-    if (category === 'semua') {
-        filteredProducts = [...products];
-    } else {
-        filteredProducts = products.filter(product => product.category === category);
+
+    // Initialize filter dropdown functionality
+    function initializeFilterDropdown() {
+        const filterToggle = document.getElementById('filterToggle');
+        const filterDropdown = document.getElementById('filterDropdown');
+        
+        if (filterToggle && filterDropdown) {
+            // Toggle dropdown when filter button is clicked
+            filterToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                filterDropdown.classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                filterDropdown.classList.add('hidden');
+            });
+            
+            // Prevent dropdown from closing when clicking inside it
+            filterDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
     }
-    
-    // Reset to first page when filtering
-    currentPage = 1;
-    renderCurrentPage();
-    updatePaginationUI();
-}
+
+    // Make filterProducts available on window for inline event handlers
+    window.filterProducts = function(category) {
+        // Update active filter button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.textContent.toLowerCase().includes(category) || 
+                (category === 'semua' && btn.textContent.toLowerCase() === 'semua'));
+        });
+        
+        // Filter products
+        if (category === 'semua') {
+            filteredProducts = [...products];
+        } else {
+            filteredProducts = products.filter(product => product.category === category);
+        }
+        
+        // Reset to first page when filtering
+        currentPage = 1;
+        renderCurrentPage();
+        updatePaginationUI();
+        
+        // Close the dropdown after selection
+        const filterDropdown = document.getElementById('filterDropdown');
+        if (filterDropdown) filterDropdown.classList.add('hidden');
+    };
+
+    // Initialize the filter dropdown when the DOM is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeFilterDropdown);
+    } else {
+        // DOMContentLoaded has already fired
+        initializeFilterDropdown();
+    }
+
+    // Run filter dropdown initialization on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeFilterDropdown();
+    });
 </script>
 </body>
 </html>

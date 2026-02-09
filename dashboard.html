@@ -322,14 +322,13 @@
         const urlParams = new URLSearchParams(queryString);
         const page = urlParams.get('page') || 'koleksi';
         const pageElement = page+'-content.html';
-
-        console.log(pageElement);
-        
         
 
         async function loadCollectionPage() {
             try {
-                const response = await fetch(pageElement);
+                // Add timestamp as cache-busting parameter
+                const timestamp = new Date().getTime();
+                const response = await fetch(`${pageElement}?v=${timestamp}`);
                 const html = await response.text();
                 
                 // Create a temporary div to hold the content
