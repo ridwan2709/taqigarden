@@ -90,6 +90,70 @@
         margin-right: 0.75rem;
         font-size: 1.1em;
     }
+
+    /* Pagination Styles */
+.pagination-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    color: #4b5563;
+    background-color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    margin: 0 2px;
+}
+.pagination-btn:hover:not(:disabled) {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.pagination-btn.active {
+    background-color: #2d4a3e;
+    color: white;
+    border-color: #2d4a3e;
+}
+.pagination-btn.active:hover {
+    background-color: #3a5a4a;
+}
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .pagination-btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: 0.75rem;
+    }
+}
+/* Ensure Font Awesome icons are properly sized */
+.pagination-btn i {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Add some spacing between pagination elements */
+#pageNumbers {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0 0.5rem;
+}
+/* Make the active page number more prominent */
+#pageNumbers .pagination-btn {
+    min-width: 2.5rem;
+}
+/* Hover effect for page numbers */
+#pageNumbers .pagination-btn:not(.active):hover {
+    background-color: #f0fdf4;
+    color: #2d4a3e;
+}
     
     /* Mobile Responsive */
     @media (max-width: 767px) {

@@ -23,8 +23,29 @@
         </div>
 
         <!-- Product Grid -->
-        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
             <!-- Products will be loaded here -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-8">
+            <nav class="flex items-center space-x-1">
+                <button id="firstPage" class="pagination-btn" disabled>
+                    <i class="fas fa-angle-double-left"></i>
+                </button>
+                <button id="prevPage" class="pagination-btn" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div id="pageNumbers" class="flex items-center space-x-1">
+                    <!-- Page numbers will be inserted here -->
+                </div>
+                <button id="nextPage" class="pagination-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <button id="lastPage" class="pagination-btn">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+            </nav>
         </div>
     </div>
 </section>
@@ -205,12 +226,18 @@
     let currentEditingId = null;
     let isFormHandlerAttached = false;
     let products = [];
+    let filteredProducts = [];
     let unsubscribeFromProducts = null;
+    
+    // Pagination variables
+    let currentPage = 1;
+    const itemsPerPage = 8; // Number of items per page
     
     // Initialize the page
     function initializeCollectionPage() {
         setupFormHandlers();
         setupModalHandlers();
+        setupPagination();
         setupAuthListener();
     }
     
@@ -223,7 +250,6 @@
         const newForm = addPlantForm.cloneNode(true);
         addPlantForm.parentNode.replaceChild(newForm, addPlantForm);
         
-        // Add the event listener to the new form
         newForm.addEventListener('submit', handleFormSubmit);
         isFormHandlerAttached = true;
     }
@@ -252,6 +278,100 @@
                 currentEditingId = null;
             });
         }
+    }
+    
+    // Set up pagination event listeners
+    function setupPagination() {
+        const firstPageBtn = document.getElementById('firstPage');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const lastPageBtn = document.getElementById('lastPage');
+        
+        firstPageBtn?.addEventListener('click', () => goToPage(1));
+        prevPageBtn?.addEventListener('click', () => goToPage(currentPage - 1));
+        nextPageBtn?.addEventListener('click', () => goToPage(currentPage + 1));
+        lastPageBtn?.addEventListener('click', () => goToPage(getTotalPages()));
+        
+        // Initial render
+        updatePaginationUI();
+    }
+    
+    // Go to specific page
+    function goToPage(page) {
+        const totalPages = getTotalPages();
+        
+        // Validate page number
+        if (page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+        
+        currentPage = page;
+        renderCurrentPage();
+        updatePaginationUI();
+        
+        // Scroll to top of product grid
+        const productGrid = document.getElementById('productGrid');
+        if (productGrid) {
+            productGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+    
+    // Get total number of pages
+    function getTotalPages() {
+        return Math.ceil((filteredProducts?.length || 0) / itemsPerPage);
+    }
+    
+    // Get current page products
+    function getCurrentPageProducts() {
+        if (!filteredProducts?.length) return [];
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filteredProducts.slice(startIndex, endIndex);
+    }
+    
+    // Update pagination UI
+    function updatePaginationUI() {
+        const totalPages = getTotalPages();
+        const pageNumbers = document.getElementById('pageNumbers');
+        const firstPageBtn = document.getElementById('firstPage');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const lastPageBtn = document.getElementById('lastPage');
+        
+        if (!pageNumbers) return;
+        
+        // Clear existing page numbers
+        pageNumbers.innerHTML = '';
+        
+        // Update button states
+        if (firstPageBtn) firstPageBtn.disabled = currentPage === 1;
+        if (prevPageBtn) prevPageBtn.disabled = currentPage === 1;
+        if (nextPageBtn) nextPageBtn.disabled = currentPage >= totalPages;
+        if (lastPageBtn) lastPageBtn.disabled = currentPage >= totalPages;
+        
+        // Generate page numbers
+        const maxPagesToShow = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = startPage + maxPagesToShow - 1;
+        
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+        
+        // Add page numbers
+        for (let i = startPage; i <= endPage; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.textContent = i;
+            pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+            pageBtn.addEventListener('click', () => goToPage(i));
+            pageNumbers.appendChild(pageBtn);
+        }
+    }
+    
+    // Render current page
+    function renderCurrentPage() {
+        const currentPageProducts = getCurrentPageProducts();
+        renderProducts(currentPageProducts);
     }
     
     // Handle form submission
@@ -449,118 +569,53 @@
         const loadingElement = document.getElementById('loading');
         
         // Show loading state
-        if (loadingElement) loadingElement.classList.remove('hidden');
         if (productGrid) productGrid.innerHTML = '';
+        if (loadingElement) loadingElement.classList.remove('hidden');
         
-        try {
-            // Set up real-time listener for plants collection
-            const q = query(
-                collection(db, 'artifacts/taqi-4a756/public/data/plants'), 
-                orderBy('createdAt', 'desc')
-            );
-            
-            // Unsubscribe from previous listener if exists
-            if (unsubscribeFromProducts) {
-                unsubscribeFromProducts();
-            }
-            
-            unsubscribeFromProducts = onSnapshot(q, (querySnapshot) => {
-                products = [];
-                querySnapshot.forEach((doc) => {
-                    products.push({ id: doc.id, ...doc.data() });
-                });
-                
-                renderProducts(products);
-                if (loadingElement) loadingElement.classList.add('hidden');
+        // Unsubscribe from previous listener if exists
+        if (unsubscribeFromProducts) {
+            unsubscribeFromProducts();
+        }
+        
+        // Set up real-time listener for plants collection
+        const q = query(collection(db, 'artifacts/taqi-4a756/public/data/plants'), orderBy('createdAt', 'desc'));
+        
+        unsubscribeFromProducts = onSnapshot(q, (querySnapshot) => {
+            products = [];
+            querySnapshot.forEach((doc) => {
+                products.push({ id: doc.id, ...doc.data() });
             });
             
-        } catch (error) {
-            console.error('Error loading plants:', error);
-            if (loadingElement) {
-                loadingElement.innerHTML = `
-                    <div class="text-red-600">
-                        <p>Gagal memuat daftar tanaman.</p>
-                        <button onclick="window.location.reload()" class="mt-2 px-4 py-2 bg-red-100 rounded">
-                            Coba Lagi
-                        </button>
+            // Initialize filtered products with all products
+            filteredProducts = [...products];
+            
+            // Hide loading and render products
+            if (loadingElement) loadingElement.classList.add('hidden');
+            renderCurrentPage();
+            updatePaginationUI();
+            
+            // Initialize search functionality
+            initializeSearch();
+        }, (error) => {
+            console.error('Error getting documents: ', error);
+            if (loadingElement) loadingElement.classList.add('hidden');
+            if (productGrid) {
+                productGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-red-500">
+                        <i class="fas fa-exclamation-circle text-4xl mb-4"></i>
+                        <p>Gagal memuat koleksi tanaman. Silakan muat ulang halaman.</p>
                     </div>`;
             }
-        }
+        });
     }
     
-    // Initialize the page when the DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', initializeCollectionPage);
-    
-    // View plant detail function
-    function viewPlantDetail(plantId) {
-        window.location.href = `plant-detail.html?id=${plantId}`;
-    }
-
-    // Make functions available globally
-    window.editPlant = editPlant;
-    window.deletePlant = deletePlant;
-    window.initializeCollectionPage = initializeCollectionPage;
-    window.viewPlantDetail = viewPlantDetail;
-
-     // Add filter functionality
-    function filterProducts(category) {
-        // Update active button state
-        document.querySelectorAll('#filterContainer .filter-btn').forEach(btn => {
-            btn.classList.remove('bg-[#2d4a3e]', 'text-white');
-            btn.classList.add('border', 'border-[#2d4a3e]', 'hover:bg-gray-100');
-        });
-        
-        // Set active state for clicked button
-        const activeBtn = Array.from(document.querySelectorAll('#filterContainer .filter-btn'))
-            .find(btn => btn.textContent.toLowerCase().includes(category));
-        if (activeBtn) {
-            activeBtn.classList.add('bg-[#2d4a3e]', 'text-white');
-            activeBtn.classList.remove('border', 'hover:bg-gray-100');
-        }
-        
-        // Filter products
-        const filteredProducts = category === 'semua' 
-            ? products 
-            : products.filter(product => product.category === category);
-        
-        // Render filtered products
-        renderProducts(filteredProducts);
-    }
-    // Update initializeCollectionPage function
-    const originalInitialize = window.initializeCollectionPage;
-    window.initializeCollectionPage = function() {
-        // Call original initialize function
-        if (originalInitialize) originalInitialize();
-        
-        // Initialize filter buttons
-        const filterButtons = document.querySelectorAll('#filterContainer .filter-btn');
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                filterButtons.forEach(btn => {
-                    btn.classList.remove('bg-[#2d4a3e]', 'text-white');
-                    btn.classList.add('border', 'border-[#2d4a3e]', 'hover:bg-gray-100');
-                });
-                
-                // Add active class to clicked button
-                this.classList.add('bg-[#2d4a3e]', 'text-white');
-                this.classList.remove('border', 'hover:bg-gray-100');
-            });
-        });
-        
-        // Set initial active state for "Semua" button
-        const semuaBtn = document.querySelector('#filterContainer .filter-btn');
-        if (semuaBtn) {
-            semuaBtn.classList.add('bg-[#2d4a3e]', 'text-white');
-            semuaBtn.classList.remove('border', 'hover:bg-gray-100');
-        }
-        
-        // Initialize search
+    // Initialize search functionality
+    function initializeSearch() {
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
-                const category = document.querySelector('#filterContainer .bg-\\[\\#2d4a3e\\]')?.textContent.toLowerCase() || 'semua';
+                const category = document.querySelector('#filterContainer .bg-[#2d4a3e]')?.textContent.toLowerCase() || 'semua';
                 let filteredProducts = [...products];
                 
                 // Apply category filter
@@ -575,16 +630,32 @@
                     );
                 }
                 
-                renderProducts(filteredProducts);
+                currentPage = 1;
+                renderCurrentPage();
+                updatePaginationUI();
             });
         }
     };
     // Make filterProducts available globally
-    window.filterProducts = filterProducts;
-    // Re-initialize to apply the new functionality
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        window.initializeCollectionPage();
+   window.filterProducts = function(category) {
+    // Update active filter button
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(category) || 
+            (category === 'semua' && btn.textContent.toLowerCase() === 'semua'));
+    });
+    
+    // Filter products
+    if (category === 'semua') {
+        filteredProducts = [...products];
+    } else {
+        filteredProducts = products.filter(product => product.category === category);
     }
+    
+    // Reset to first page when filtering
+    currentPage = 1;
+    renderCurrentPage();
+    updatePaginationUI();
+}
 </script>
 </body>
 </html>
