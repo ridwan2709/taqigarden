@@ -55,16 +55,16 @@
             box-shadow: 2px 5px 15px rgba(0,0,0,0.2);
             z-index: 1000;
         }
-
-        /* Modal Styles */
-        #adminModal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        .filter-btn:hover {
+            background-color: #2d4a3e;
+            color: white;
+        }
+        .filter-btn.active {
+            background-color: #2d4a3e;
+            color: white;
         }
     </style>
 </head>
@@ -90,9 +90,7 @@
                 <li><a href="index.html#about" class="hover:text-[#4f7962]">Tentang Kami</a></li>
             </ul>
             <div class="flex items-center space-x-5">
-                <button onclick="openAdmin()" class="text-gray-400 hover:text-[#2d4a3e] transition">
-                    <i class="fas fa-plus-circle text-xl"></i>
-                </button>
+               
             </div>
         </nav>
     </header>
@@ -134,39 +132,6 @@
         </div>
     </section>
 
-    <!-- Admin Modal (Tambah Produk) -->
-    <div id="adminModal">
-        <div class="bg-white p-8 rounded-2xl w-full max-w-md mx-4 shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold brand-font text-[#2d4a3e]">Tambah Tanaman</h3>
-                <button onclick="closeAdmin()" class="text-gray-400 hover:text-red-500 text-2xl">&times;</button>
-            </div>
-            <form id="addPlantForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1">Nama Tanaman</label>
-                    <input type="text" id="pName" required class="w-full border p-2 rounded focus:ring-2 focus:ring-[#2d4a3e] outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1">Kategori</label>
-                    <select id="pCategory" class="w-full border p-2 rounded outline-none">
-                        <option value="indoor">Indoor</option>
-                        <option value="langka">Langka</option>
-                        <option value="sukulen">Sukulen</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1">Harga (Tanpa Rp)</label>
-                    <input type="text" id="pPrice" placeholder="e.g. 150.000" required class="w-full border p-2 rounded outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1">URL Gambar (Unsplash/Lainnya)</label>
-                    <input type="url" id="pImg" placeholder="https://..." required class="w-full border p-2 rounded outline-none">
-                </div>
-                <button type="submit" class="w-full bg-[#2d4a3e] text-white py-3 rounded-lg hover:bg-[#4f7962] transition font-bold uppercase tracking-widest">Simpan Koleksi</button>
-            </form>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="bg-[#2d4a3e] text-white py-12 mt-20">
         <div class="container mx-auto px-6 text-center">
@@ -177,226 +142,257 @@
     </footer>
 
     <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+   <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+    import { 
+        getFirestore, 
+        collection, 
+        query, 
+        orderBy, 
+        getDocs
+    } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        // Konfigurasi Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyA51F2pPZUWmdOaYqsihD78LTrvnXDqXn4",
-            authDomain: "taqi-4a756.firebaseapp.com",
-            projectId: "taqi-4a756",
-            storageBucket: "taqi-4a756.firebasestorage.app",
-            messagingSenderId: "836265831490",
-            appId: "1:836265831490:web:38277600db742f145451db",
-            measurementId: "G-0TJDCT97CN"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'taqi-garden-app';
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyA51F2pPZUWmdOaYqsihD78LTrvnXDqXn4",
+        authDomain: "taqi-4a756.firebaseapp.com",
+        projectId: "taqi-4a756",
+        storageBucket: "taqi-4a756.firebasestorage.app",
+        messagingSenderId: "836265831490",
+        appId: "1:836265831490:web:38277600db742f145451db"
+    };
 
-        let allProducts = [];
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // 1. Auth & Initial Load (Mengikuti Rule 3: Auth Dulu Baru Query)
-        const init = async () => {
-            try {
-                console.log('Starting authentication...');
-                
-                // Try anonymous authentication first
-                try {
-                    console.log('Attempting anonymous sign-in...');
-                    const userCredential = await signInAnonymously(auth);
-                    console.log('Anonymous sign-in successful:', userCredential.user.uid);
-                } catch (authError) {
-                    console.error('Anonymous auth failed, trying custom token...', authError);
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        console.log('Attempting custom token sign-in...');
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        throw new Error('No authentication method available');
-                    }
-                }
-                
-                // Set up auth state listener
-                const unsubscribe = onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        console.log('Auth state changed - User signed in:', user.uid);
-                        loadData();
-                    } else {
-                        console.log('Auth state changed - No user signed in');
-                        document.getElementById('loading').innerHTML = "Gagal autentikasi. Silakan muat ulang halaman.";
-                    }
-                    unsubscribe(); // Clean up the listener after it's used
-                });
-                
-            } catch (error) {
-                console.error("Autentikasi gagal:", error);
-                const errorMessage = error.code || error.message;
-                document.getElementById('loading').innerHTML = `
-                    <div class="text-red-600">
-                        <p class="font-bold">Gagal memuat data</p>
-                        <p class="text-sm">${errorMessage}</p>
-                        <button onclick="window.location.reload()" class="mt-2 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200">
-                            Coba Lagi
-                        </button>
-                    </div>`;
-            }
-        };
-
-        // 2. Load Data from Firestore (Rule 1: Path Spesifik)
-        const loadData = () => {
-            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'plants');
-            onSnapshot(colRef, (snapshot) => {
-                allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                document.getElementById('loading').style.display = 'none';
-                displayProducts(allProducts);
-            }, (error) => {
-                console.error("Gagal mengambil data", error);
-            });
-        };
-
-        // 3. Tampilan Koleksi
-        window.displayProducts = (filteredList) => {
-            const productGrid = document.getElementById('productGrid');
-            productGrid.innerHTML = '';
-            
-            if (filteredList.length === 0) {
-                productGrid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">Belum ada koleksi ditemukan.</div>';
-                return;
-            }
-
-            filteredList.forEach(product => {
-                const card = `
-                    <div class="product-card bg-white p-4 rounded-xl shadow-sm border border-gray-50">
-                        <div class="aspect-square bg-gray-100 mb-4 overflow-hidden rounded-lg">
-                            <img src="${product.img}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1545241047-6083a3684587?w=500'">
-                        </div>
-                        <span class="text-[10px] uppercase tracking-widest text-gray-400">${product.category}</span>
-                        <h4 class="text-lg font-semibold mb-1">${product.name}</h4>
-                        <p class="text-[#4f7962] font-bold mb-4">Rp ${product.price}</p>
-                        <a href="https://wa.me/6281234567890?text=Halo%20Taqi%20Garden,%20apakah%20stok%20${product.name}%20masih%20ada?" target="_blank" class="block w-full text-center bg-[#2d4a3e] text-white py-2 rounded-lg hover:bg-[#4f7962] transition text-sm">Tanya Stok</a>
-                    </div>
-                `;
-                productGrid.innerHTML += card;
-            });
-        };
-
-        // 4. Logika Tambah Tanaman
-        const addForm = document.getElementById('addPlantForm');
-        addForm.onsubmit = async (e) => {
-            e.preventDefault();
-            if (!auth.currentUser) return;
-
-            const btn = e.target.querySelector('button');
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
-
-            const newPlant = {
-                name: document.getElementById('pName').value,
-                category: document.getElementById('pCategory').value,
-                price: document.getElementById('pPrice').value,
-                img: document.getElementById('pImg').value,
-                createdAt: new Date().toISOString()
-            };
-
-            try {
-                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'plants');
-                await addDoc(colRef, newPlant);
-                addForm.reset();
-                closeAdmin();
-                // Custom UI Modal sebagai pengganti alert() sesuai panduan
-                console.log("Tanaman berhasil disimpan!");
-            } catch (err) {
-                console.error("Gagal menyimpan:", err);
-            } finally {
-                btn.innerText = "Simpan Koleksi";
-                btn.disabled = false;
-            }
-        };
-
-        // 5. Pencarian & Filter
-        window.filterProducts = (category) => {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.innerText.toLowerCase() === category.toLowerCase()) btn.classList.add('active');
-            });
-            const filtered = category === 'semua' ? allProducts : allProducts.filter(p => p.category === category);
-            displayProducts(filtered);
-        };
-
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(term));
-            displayProducts(filtered);
-        });
-
-        // Kontrol Modal Admin
-        window.openAdmin = () => document.getElementById('adminModal').style.display = 'flex';
-        window.closeAdmin = () => document.getElementById('adminModal').style.display = 'none';
-
-        init();
-        function setupFormHandlers() {
-    const addPlantForm = document.getElementById('addPlantForm');
-    if (!addPlantForm) return;
-    // Remove any existing event listeners
-    const newForm = addPlantForm.cloneNode(true);
-    addPlantForm.parentNode.replaceChild(newForm, addPlantForm);
-    // Add a single event listener
-    newForm.addEventListener('submit', handleFormSubmit);
-}
-async function handleFormSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
-    
-    // Prevent multiple submissions
-    if (form.dataset.submitting === 'true') return;
-    form.dataset.submitting = 'true';
-    
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerHTML;
-    
-    try {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-        
-        // Get form values
-        const plantData = {
-            name: document.getElementById('pName')?.value?.trim(),
-            category: document.getElementById('pCategory')?.value,
-            price: parseInt(document.getElementById('pPrice')?.value?.replace(/\D/g, '') || '0'),
-            imageUrl: document.getElementById('pImg')?.value?.trim(),
-            createdAt: new Date().toISOString()
-        };
-        // Validate required fields
-        if (!plantData.name || !plantData.imageUrl) {
-            throw new Error('Nama tanaman dan URL gambar harus diisi');
-        }
-        // Add to Firestore
-        const docRef = await addDoc(
-            collection(db, 'artifacts/taqi-4a756/public/data/plants'), 
-            plantData
-        );
-        
-        console.log('Document written with ID: ', docRef.id);
-        form.reset();
-        document.getElementById('addPlantModal').classList.add('hidden');
-        
-    } catch (error) {
-        console.error('Error:', error);
-        alert(error.message || 'Gagal menambahkan tanaman. Silakan coba lagi.');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtnText;
-        form.dataset.submitting = 'false';
+    // Helper functions
+    function formatPrice(price) {
+        if (!price && price !== 0) return 'Harga tidak tersedia';
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0
+        }).format(price);
     }
+
+    function formatCategory(category) {
+        if (!category) return 'Tanpa Kategori';
+        return category.charAt(0).toUpperCase() + category.slice(1);
+    }
+
+    function getCategoryColor(category) {
+        if (!category) return 'gray';
+        const categoryColors = {
+            'indoor': 'blue',
+            'outdoor': 'green',
+            'hias': 'purple',
+            'langka': 'red',
+            'sukulen': 'teal',
+            'bunga': 'pink'
+        };
+        return categoryColors[category.toLowerCase()] || 'gray';
+    }
+
+    function displayNoProducts() {
+        const productGrid = document.getElementById('productGrid');
+        productGrid.innerHTML = `
+            <div class="col-span-full text-center py-12 text-gray-500">
+                <i class="fas fa-leaf text-4xl mb-4"></i>
+                <p>Belum ada tanaman yang tersedia.</p>
+            </div>`;
+    }
+
+    function displayError(error) {
+        const productGrid = document.getElementById('productGrid');
+        productGrid.innerHTML = `
+            <div class="col-span-full text-center py-12 text-red-600">
+                <p>Gagal memuat data tanaman: ${error.message}</p>
+                <p class="text-sm mt-2">Silakan coba beberapa saat lagi.</p>
+                <button onclick="window.location.reload()" 
+                        class="mt-4 px-6 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-700">
+                    Muat Ulang
+                </button>
+            </div>`;
+    }
+
+    function displayProducts(products) {
+    const productGrid = document.getElementById('productGrid');
+    if (!productGrid) return;
+    
+    if (!products || products.length === 0) {
+        displayNoProducts();
+        return;
+    }
+    
+    productGrid.innerHTML = products.map(product => `
+        <div class="product-item bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-transform hover:-translate-y-1">
+            <div class="h-48 bg-gray-100 overflow-hidden">
+                <img src="${product.imageUrl || product.img || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                     alt="${product.name || 'Tanaman'}" 
+                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                     onerror="this.src='https://via.placeholder.com/300x200?text=Gagal+Memuat+Gambar'">
+            </div>
+            <div class="p-5">
+                <span class="category-tag inline-block px-3 py-1 text-xs font-semibold text-white bg-${getCategoryColor(product.category)}-500 rounded-full mb-2">
+                    ${formatCategory(product.category)}
+                </span>
+                <h3 class="font-bold text-lg mb-1">${product.name || 'Tanpa Nama'}</h3>
+                <p class="text-[#2d4a3e] font-bold">${formatPrice(product.price)}</p>
+            </div>
+        </div>
+    `).join('');
 }
-// Call this when initializing your page
-function initializeCollectionPage() {
-    setupFormHandlers();
-    // ... rest of your initialization code ...
+
+    // Main function to load products
+    async function loadProducts() {
+        const loading = document.getElementById('loading');
+        const productGrid = document.getElementById('productGrid');
+        
+        try {
+            loading.classList.remove('hidden');
+            productGrid.innerHTML = '';
+
+            // Try to load products
+            const q = query(
+                collection(db, 'artifacts/taqi-4a756/public/data/plants'),
+                orderBy('createdAt', 'desc')
+            );
+
+            const querySnapshot = await getDocs(q);
+            const products = [];
+            
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (data.name) {  // Only add if it has a name
+                    products.push({ 
+                        id: doc.id,
+                        ...data,
+                        // Ensure we have all required fields with fallbacks
+                        name: data.name || 'Tanpa Nama',
+                        category: data.category || 'uncategorized',
+                        price: data.price || 0,
+                        imageUrl: data.imageUrl || data.img || 'https://via.placeholder.com/300x200?text=No+Image'
+                    });
+                }
+            });
+
+            console.log('Loaded products:', products);
+            
+            if (products.length === 0) {
+                displayNoProducts();
+            } else {
+                displayProducts(products);
+            }
+            
+        } catch (error) {
+            console.error("Error loading products:", error);
+            displayError(error);
+        } finally {
+            loading.classList.add('hidden');
+        }
+    }
+
+    // Initialize when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProducts();
+    });
+
+    // Make functions available globally if needed
+    window.loadProducts = loadProducts;
+
+    // Filter products by category
+function filterProducts(category) {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => {
+        if (btn.textContent.toLowerCase().includes(category) || 
+            (category === 'semua' && btn.textContent.toLowerCase() === 'semua')) {
+            btn.classList.add('bg-[#2d4a3e]', 'text-white');
+            btn.classList.remove('text-[#2d4a3e]');
+        } else {
+            btn.classList.remove('bg-[#2d4a3e]', 'text-white');
+            btn.classList.add('text-[#2d4a3e]');
+        }
+    });
+    const productGrid = document.getElementById('productGrid');
+    const products = Array.from(productGrid.children);
+        
+    products.forEach(product => {
+        if (category === 'semua') {
+            product.style.display = 'block';
+        } else {
+            const productCategory = product.querySelector('span')?.textContent?.toLowerCase();
+            if (productCategory && productCategory.includes(category)) {
+                product.style.display = 'block';
+            } else {
+                product.style.display = 'none';
+            }
+        }
+    });
 }
-    </script>
+// Add search functionality
+document.getElementById('searchInput')?.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const products = document.querySelectorAll('#productGrid > div');
+        
+    products.forEach(product => {
+        const name = product.querySelector('h3')?.textContent?.toLowerCase() || '';
+        const category = product.querySelector('span')?.textContent?.toLowerCase() || '';
+            
+        if (name.includes(searchTerm) || category.includes(searchTerm)) {
+            product.style.display = 'block';
+        } else {
+            product.style.display = 'none';
+        }
+    });
+});
+window.filterProducts = function(category) {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => {
+        if (btn.textContent.toLowerCase().includes(category) || 
+            (category === 'semua' && btn.textContent.toLowerCase() === 'semua')) {
+            btn.classList.add('bg-[#2d4a3e]', 'text-white');
+            btn.classList.remove('text-[#2d4a3e]');
+        } else {
+            btn.classList.remove('bg-[#2d4a3e]', 'text-white');
+            btn.classList.add('text-[#2d4a3e]');
+        }
+    });
+    const productGrid = document.getElementById('productGrid');
+    const products = Array.from(productGrid.children);
+        
+    products.forEach(product => {
+        if (category === 'semua') {
+            product.style.display = 'block';
+        } else {
+            const productCategory = product.querySelector('span')?.textContent?.toLowerCase();
+            if (productCategory && productCategory.includes(category)) {
+                product.style.display = 'block';
+            } else {
+                product.style.display = 'none';
+            }
+        }
+    });
+}
+// Update the search functionality to use event delegation
+document.addEventListener('input', (e) => {
+    if (e.target.matches('#searchInput')) {
+        const searchTerm = e.target.value.toLowerCase();
+        const products = document.querySelectorAll('#productGrid > div');
+            
+        products.forEach(product => {
+            const name = product.querySelector('h3')?.textContent?.toLowerCase() || '';
+            const category = product.querySelector('span')?.textContent?.toLowerCase() || '';
+                
+            if (name.includes(searchTerm) || category.includes(searchTerm)) {
+                product.style.display = 'block';
+            } else {
+                product.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
 </body>
 </html>
