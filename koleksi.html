@@ -103,31 +103,60 @@
 
     <!-- Products Section -->
     <section class="py-12">
-        <div class="container mx-auto px-6">
+        <div class="container mx-auto px-4 sm:px-6">
             
+            <!-- Breadcrumb -->
+            <div class="text-sm text-gray-500 mb-6">
+                <a href="index.html" class="hover:text-[#2d4a3e]">Home</a> / 
+                <span class="text-gray-700">Collection</span>
+            </div>
+            
+            <!-- Page Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Plant Collection</h1>
+                <p class="text-gray-600 max-w-2xl mx-auto">Discover our wide variety of indoor and outdoor plants to bring nature into your home</p>
+            </div>
+
             <!-- Filter & Search -->
-            <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-                <div class="flex flex-wrap justify-center gap-3" id="filterContainer">
-                    <button class="filter-btn active px-6 py-2 rounded-full border border-[#2d4a3e] text-sm uppercase tracking-wider transition" onclick="filterProducts('all')">All</button>
-                    <button class="filter-btn px-6 py-2 rounded-full border border-[#2d4a3e] text-sm uppercase tracking-wider transition" onclick="filterProducts('indoor')">Indoor</button>
-                    <button class="filter-btn px-6 py-2 rounded-full border border-[#2d4a3e] text-sm uppercase tracking-wider transition" onclick="filterProducts('rare')">Rare</button>
-                    <button class="filter-btn px-6 py-2 rounded-full border border-[#2d4a3e] text-sm uppercase tracking-wider transition" onclick="filterProducts('succulent')">Succulent</button>
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <!-- Category Filter -->
+                <div class="flex flex-wrap justify-center gap-2" id="filterContainer">
+                    <button class="filter-btn active px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" data-filter="all">All Plants</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" data-filter="indoor">Indoor</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" data-filter="outdoor">Outdoor</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" data-filter="rare">Rare</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" data-filter="succulent">Succulent</button>
                 </div>
-                <div class="relative w-full md:w-64">
-                    <input type="text" id="searchInput" placeholder="Search plants..." class="w-full pl-10 pr-4 py-2 border-b border-gray-300 bg-transparent focus:outline-none focus:border-[#2d4a3e]">
-                    <i class="fas fa-search absolute left-2 top-3 text-gray-400"></i>
+                
+                <!-- Search -->
+                <div class="relative w-full md:w-80">
+                    <input type="text" id="searchInput" placeholder="Search plants by name..." 
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none text-sm">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
             </div>
 
-            <!-- Loading Spinner -->
-            <div id="loading" class="text-center py-20 text-[#2d4a3e]">
-                <i class="fas fa-circle-notch fa-spin text-4xl"></i>
-                <p class="mt-4">Loading collection...</p>
-            </div>
+            <!-- Loading and Content -->
+            <div class="relative min-h-[400px]">
+                <!-- Loading Spinner -->
+                <div id="loading" class="absolute inset-0 flex flex-col items-center justify-center text-[#2d4a3e] transition-opacity duration-300">
+                    <i class="fas fa-circle-notch fa-spin text-4xl"></i>
+                    <p class="mt-4">Loading collection...</p>
+                </div>
 
-            <!-- Product Grid -->
-            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Produk akan dimuat melalui Firebase -->
+                <!-- No Results -->
+                <div id="noResults" class="hidden text-center py-16">
+                    <div class="inline-block p-4 bg-gray-50 rounded-full mb-4">
+                        <i class="fas fa-leaf text-3xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-1">No plants found</h3>
+                    <p class="text-gray-500 text-sm">Try adjusting your search or filter to find what you're looking for.</p>
+                </div>
+
+                <!-- Product Grid -->
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-opacity duration-300 opacity-0">
+                    <!-- Products will be loaded here -->
+                </div>
             </div>
         </div>
     <footer class="bg-[#2d4a3e] text-white py-12 mt-20">
@@ -147,8 +176,14 @@
         collection, 
         query, 
         orderBy, 
-        getDocs
+        getDocs,
+        where
     } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+    
+    // State
+    let allProducts = [];
+    let currentFilter = 'all';
+    let currentSearch = '';
 
     // Firebase configuration
     const firebaseConfig = {
@@ -166,230 +201,194 @@
 
     // Helper functions
     function formatPrice(price) {
-        if (!price && price !== 0) return 'Price not available';
+        if (!price && price !== 0) return 'Contact Us';
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
-            maximumFractionDigits: 0
+            maximumFractionDigits: 0,
+            minimumFractionDigits: 0
         }).format(price);
     }
 
     function formatCategory(category) {
-        if (!category) return 'No Category';
-        return category.charAt(0).toUpperCase() + category.slice(1);
-    }
-
-    function getCategoryColor(category) {
-        if (!category) return 'gray';
-        const categoryColors = {
-            'indoor': 'blue',
-            'outdoor': 'green',
-            'ornamental': 'purple',
-            'rare': 'red',
-            'succulent': 'teal',
-            'flower': 'pink'
+        if (!category) return 'Plant';
+        const categories = {
+            'indoor': 'Indoor Plant',
+            'outdoor': 'Outdoor Plant',
+            'langka': 'Rare Plant',
+            'sukulen': 'Succulent',
+            'hias': 'Ornamental Plant',
+            'monstera': 'Monstera',
+            'aglaonema': 'Aglaonema',
+            'philodendron': 'Philodendron'
         };
-        return categoryColors[category.toLowerCase()] || 'gray';
+        return categories[category.toLowerCase()] || category.charAt(0).toUpperCase() + category.slice(1);
     }
-
-    function displayNoProducts() {
-        const productGrid = document.getElementById('productGrid');
-        productGrid.innerHTML = `
-            <div class="col-span-full text-center py-12 text-gray-500">
-                <i class="fas fa-leaf text-4xl mb-4"></i>
-                <p>No plants available yet.</p>
-            </div>`;
+    
+    function getCategoryClass(category) {
+        if (!category) return 'bg-gray-100 text-gray-800';
+        const classes = {
+            'indoor': 'bg-blue-50 text-blue-800',
+            'outdoor': 'bg-green-50 text-green-800',
+            'langka': 'bg-purple-50 text-purple-800',
+            'sukulen': 'bg-teal-50 text-teal-800',
+            'hias': 'bg-pink-50 text-pink-800',
+            'monstera': 'bg-amber-50 text-amber-800',
+            'aglaonema': 'bg-red-50 text-red-800',
+            'philodendron': 'bg-emerald-50 text-emerald-800'
+        };
+        return classes[category.toLowerCase()] || 'bg-gray-100 text-gray-800';
     }
 
     function displayError(error) {
         const productGrid = document.getElementById('productGrid');
         productGrid.innerHTML = `
-            <div class="col-span-full text-center py-12 text-red-600">
-                <p>Failed to load plant data: ${error.message}</p>
-                <p class="text-sm mt-2">Please try again later.</p>
-                <button onclick="window.location.reload()" 
-                        class="mt-4 px-6 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-700">
-                    Reload
-                </button>
-            </div>`;
+            <div class="text-center">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-3"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-1">Error loading plants</h3>
+                <p class="text-gray-500 text-sm">Please try refreshing the page or contact support.</p>
+            </div>
+        `;
     }
 
-    function displayProducts(products) {
-    const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return;
-    
-    if (!products || products.length === 0) {
-        displayNoProducts();
-        return;
+    // Filter products based on current filter and search term
+    function filterProducts() {
+        const filtered = allProducts.filter(product => {
+            // Check if product matches search term
+            const matchesSearch = !currentSearch || 
+                (product.name && product.name.toLowerCase().includes(currentSearch)) ||
+                (product.category && product.category.toLowerCase().includes(currentSearch));
+            
+            // Check if product matches selected filter
+            if (currentFilter === 'all') return matchesSearch;
+            
+            const productCategory = product.category?.toLowerCase() || '';
+            
+            // Handle different category formats and languages
+            const categoryMatches = {
+                'indoor': productCategory.includes('indoor') || productCategory.includes('dalam'),
+                'outdoor': productCategory.includes('outdoor') || productCategory.includes('luar'),
+                'rare': productCategory.includes('rare') || productCategory.includes('langka'),
+                'succulent': productCategory.includes('succulent') || productCategory.includes('sukulen')
+            };
+            
+            return matchesSearch && (categoryMatches[currentFilter] || false);
+        });
+        
+        renderProducts(filtered);
     }
     
-    productGrid.innerHTML = products.map(product => `
-        <div class="product-item bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-transform hover:-translate-y-1">
-            <div class="h-48 bg-gray-100 overflow-hidden">
-                <img src="${product.imageUrl || product.img || 'https://via.placeholder.com/300x200?text=No+Image'}" 
-                     alt="${product.name || 'Plant'}" 
-                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                     onerror="this.src='https://via.placeholder.com/300x200?text=Failed+to+Load+Image'">
+    // Render products
+    function renderProducts(products) {
+        const productGrid = document.getElementById('productGrid');
+        const noResults = document.getElementById('noResults');
+        
+        if (!products || products.length === 0) {
+            productGrid.classList.add('opacity-0');
+            noResults.classList.remove('hidden');
+            return;
+        }
+        
+        noResults.classList.add('hidden');
+        
+        const productsHTML = products.map(product => `
+            <div class="product-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1" 
+                 data-category="${product.category || ''}">
+                <a href="plant-detail.html?id=${product.id}" class="block h-full flex flex-col">
+                    <div class="aspect-square bg-gray-100 overflow-hidden">
+                        <img src="${product.imageUrl || 'https://via.placeholder.com/400x400?text=No+Image'}" 
+                             alt="${product.name || 'Plant'}" 
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col">
+                        <div class="flex-grow">
+                            <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2 h-12">${product.name || 'Unnamed Plant'}</h3>
+                            <div class="flex flex-wrap gap-1.5 mb-3">
+                                <span class="text-xs ${getCategoryClass(product.category)} px-2 py-1 rounded-full">
+                                    ${formatCategory(product.category)}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-auto pt-2 border-t border-gray-100">
+                            <p class="text-[#2d4a3e] font-bold text-lg">${formatPrice(product.price)}</p>
+                        </div>
+                    </div>
+                </a>
             </div>
-            <div class="p-5">
-                <span class="category-tag inline-block px-3 py-1 text-xs font-semibold text-white bg-${getCategoryColor(product.category)}-500 rounded-full mb-2">
-                    ${formatCategory(product.category)}
-                </span>
-                <h3 class="font-bold text-lg mb-1">${product.name || 'Unnamed'}</h3>
-                <p class="text-[#2d4a3e] font-bold">${formatPrice(product.price)}</p>
-            </div>
-        </div>
-    `).join('');
-}
-
-    // Main function to load products
+        `).join('');
+        
+        productGrid.innerHTML = productsHTML;
+        productGrid.classList.remove('opacity-0');
+    }
+    
+    // Load products from Firestore
     async function loadProducts() {
         const loading = document.getElementById('loading');
         const productGrid = document.getElementById('productGrid');
         
         try {
-            loading.classList.remove('hidden');
-            productGrid.innerHTML = '';
-
-            // Try to load products
-            const q = query(
-                collection(db, 'artifacts/taqi-4a756/public/data/plants'),
-                orderBy('createdAt', 'desc')
-            );
-
+            loading.classList.remove('opacity-0');
+            productGrid.classList.add('opacity-0');
+            
+            const q = query(collection(db, 'artifacts/taqi-4a756/public/data/plants'), orderBy('name'));
             const querySnapshot = await getDocs(q);
-            const products = [];
             
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                if (data.name) {  // Only add if it has a name
-                    products.push({ 
-                        id: doc.id,
-                        ...data,
-                        // Ensure we have all required fields with fallbacks
-                        name: data.name || 'Unnamed',
-                        category: data.category || 'uncategorized',
-                        price: data.price || 0,
-                        imageUrl: data.imageUrl || data.img || 'https://via.placeholder.com/300x200?text=No+Image'
-                    });
-                }
+            allProducts = [];
+            querySnapshot.forEach(doc => {
+                allProducts.push({ id: doc.id, ...doc.data() });
             });
-
-            console.log('Loaded products:', products);
             
-            if (products.length === 0) {
-                displayNoProducts();
-            } else {
-                displayProducts(products);
-            }
+            // Apply initial filter and render
+            filterProducts();
             
         } catch (error) {
-            console.error("Error loading products:", error);
+            console.error('Error loading products:', error);
             displayError(error);
         } finally {
-            loading.classList.add('hidden');
+            loading.classList.add('opacity-0');
+            loading.style.pointerEvents = 'none';
         }
     }
 
     // Initialize when the page loads
     document.addEventListener('DOMContentLoaded', () => {
+        // Load products
         loadProducts();
+        
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Update active state
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active', 'bg-[#2d4a3e]', 'text-white');
+                    btn.classList.add('text-[#2d4a3e]');
+                });
+                
+                // Set active state for clicked button
+                e.currentTarget.classList.add('active', 'bg-[#2d4a3e]', 'text-white');
+                
+                // Update filter and re-render
+                currentFilter = e.currentTarget.dataset.filter;
+                filterProducts();
+            });
+        });
+        
+        // Search input
+        const searchInput = document.getElementById('searchInput');
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentSearch = e.target.value.trim().toLowerCase();
+                filterProducts();
+            }, 300);
+        });
     });
 
     // Make functions available globally if needed
     window.loadProducts = loadProducts;
-
-    // Filter products by category
-function filterProducts(category) {
-    const buttons = document.querySelectorAll('.filter-btn');
-    buttons.forEach(btn => {
-        if (btn.textContent.toLowerCase().includes(category) || 
-            (category === 'semua' && btn.textContent.toLowerCase() === 'semua')) {
-            btn.classList.add('bg-[#2d4a3e]', 'text-white');
-            btn.classList.remove('text-[#2d4a3e]');
-        } else {
-            btn.classList.remove('bg-[#2d4a3e]', 'text-white');
-            btn.classList.add('text-[#2d4a3e]');
-        }
-    });
-    const productGrid = document.getElementById('productGrid');
-    const products = Array.from(productGrid.children);
-        
-    products.forEach(product => {
-        if (category === 'semua') {
-            product.style.display = 'block';
-        } else {
-            const productCategory = product.querySelector('span')?.textContent?.toLowerCase();
-            if (productCategory && productCategory.includes(category)) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        }
-    });
-}
-// Add search functionality
-document.getElementById('searchInput')?.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const products = document.querySelectorAll('#productGrid > div');
-        
-    products.forEach(product => {
-        const name = product.querySelector('h3')?.textContent?.toLowerCase() || '';
-        const category = product.querySelector('span')?.textContent?.toLowerCase() || '';
-            
-        if (name.includes(searchTerm) || category.includes(searchTerm)) {
-            product.style.display = 'block';
-        } else {
-            product.style.display = 'none';
-        }
-    });
-});
-window.filterProducts = function(category) {
-    const buttons = document.querySelectorAll('.filter-btn');
-    buttons.forEach(btn => {
-        if (btn.textContent.toLowerCase().includes(category) || 
-            (category === 'semua' && btn.textContent.toLowerCase() === 'semua')) {
-            btn.classList.add('bg-[#2d4a3e]', 'text-white');
-            btn.classList.remove('text-[#2d4a3e]');
-        } else {
-            btn.classList.remove('bg-[#2d4a3e]', 'text-white');
-            btn.classList.add('text-[#2d4a3e]');
-        }
-    });
-    const productGrid = document.getElementById('productGrid');
-    const products = Array.from(productGrid.children);
-        
-    products.forEach(product => {
-        if (category === 'semua') {
-            product.style.display = 'block';
-        } else {
-            const productCategory = product.querySelector('span')?.textContent?.toLowerCase();
-            if (productCategory && productCategory.includes(category)) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        }
-    });
-}
-// Update the search functionality to use event delegation
-document.addEventListener('input', (e) => {
-    if (e.target.matches('#searchInput')) {
-        const searchTerm = e.target.value.toLowerCase();
-        const products = document.querySelectorAll('#productGrid > div');
-            
-        products.forEach(product => {
-            const name = product.querySelector('h3')?.textContent?.toLowerCase() || '';
-            const category = product.querySelector('span')?.textContent?.toLowerCase() || '';
-                
-            if (name.includes(searchTerm) || category.includes(searchTerm)) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-    }
-});
+    window.filterProducts = filterProducts;
 </script>
 </body>
 </html>

@@ -51,7 +51,7 @@
 </head>
 <body class="bg-[#f9f7f2]">
     <!-- WhatsApp Button -->
-    <a href="https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20am%20interested%20in%20your%20plant%20collection." target="_blank" class="whatsapp-btn" title="Chat WhatsApp">
+    <a href="https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20am%20interested%20in%20your%20plant%20collection." target="_blank" class="whatsapp-btn" title="Contact via WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
 
@@ -208,10 +208,53 @@
             }).format(price);
         }
 
-        // Format category name
+        // Translation dictionary
+        const translations = {
+            // Categories
+            'indoor': 'Indoor Plant',
+            'outdoor': 'Outdoor Plant',
+            'langka': 'Rare Plant',
+            'sukulen': 'Succulent',
+            'hias': 'Ornamental Plant',
+            'monstera': 'Monstera',
+            'aglaonema': 'Aglaonema',
+            'philodendron': 'Philodendron',
+            
+            // Light conditions
+            'Rendah (teduh)': 'Low (shade)',
+            'Sedang (cahaya tidak langsung)': 'Medium (indirect light)',
+            'Tinggi (cahaya terang)': 'High (bright light)',
+            'Sinar matahari langsung': 'Direct sunlight',
+            
+            // Water needs
+            'Sedikit (biarkan kering di antara penyiraman)': 'Low (let dry between waterings)',
+            'Sedang (siram saat tanah kering)': 'Medium (water when dry)',
+            'Banyak (jaga tanah tetap lembap)': 'High (keep soil moist)',
+            'Sangat banyak (tanah selalu basah)': 'Very high (keep soil wet)',
+            
+            // Humidity
+            'Rendah (kering)': 'Low (dry)',
+            'Sedang (normal)': 'Medium (normal)',
+            'Tinggi (lembap)': 'High (humid)',
+            'Sangat tinggi (sangat lembap)': 'Very high (very humid)',
+            
+            // Toxicity
+            'Aman untuk hewan peliharaan': 'Pet safe',
+            'Beracun jika tertelan': 'Toxic if ingested',
+            'Beracun bagi kucing': 'Toxic to cats',
+            'Beracun bagi anjing': 'Toxic to dogs'
+        };
+
+        // Function to translate text
+        function translateText(text) {
+            if (!text) return '';
+            return translations[text] || text;
+        }
+
+        // Format category name with translation
         function formatCategory(category) {
             if (!category) return 'Plant';
-            return category.charAt(0).toUpperCase() + category.slice(1);
+            return translateText(category);
         }
 
         // Load plant details
@@ -227,8 +270,42 @@
 
                 if (docSnap.exists()) {
                     const plant = { id: docSnap.id, ...docSnap.data() };
-                    displayPlantDetails(plant);
-                    loadSimilarPlants(plant.category, plantId);
+
+                    // Translate plant data
+                    const translatedPlant = {
+                        ...plant,
+                        category: translateText(plant.category),
+                        light: translateText(plant.light),
+                        water: translateText(plant.water),
+                        humidity: translateText(plant.humidity),
+                        toxicity: translateText(plant.toxicity),
+                        description: translateText(plant.description)
+                    };
+
+                    // Update the UI with translated plant data
+                    document.getElementById('plantName').textContent = plant.name; // Keep plant name in original language
+                    document.getElementById('plantCategory').textContent = translatedPlant.category;
+                    document.getElementById('plantPrice').textContent = `Rp ${plant.price ? plant.price.toLocaleString('id-ID') : '0'}`;
+                    document.getElementById('plantImage').src = plant.imageUrl || 'https://via.placeholder.com/600x600?text=No+Image';
+                    document.getElementById('plantDescription').textContent = translatedPlant.description || 'No description available.';
+                    document.getElementById('plantLight').textContent = translatedPlant.light || '-';
+                    document.getElementById('plantWater').textContent = translatedPlant.water || '-';
+                    document.getElementById('plantHumidity').textContent = translatedPlant.humidity || '-';
+                    document.getElementById('plantToxicity').textContent = translatedPlant.toxicity || '-';
+
+                    // Update WhatsApp button with plant name
+                    const whatsappBtn = document.querySelector('.whatsapp-btn');
+                    whatsappBtn.href = `https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20am%20interested%20in%20${encodeURIComponent(plant.name)}.`;
+
+                    // Update contact button
+                    const contactBtn = document.getElementById('contactBtn');
+                    contactBtn.onclick = () => window.open(whatsappBtn.href, '_blank');
+
+                    // Load similar plants (passing translated category)
+                    loadSimilarPlants(translatedPlant.category, plant.id);
+
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('plantDetail').classList.remove('hidden');
                 } else {
                     showError();
                 }
@@ -236,39 +313,6 @@
                 console.error("Error loading plant:", error);
                 showError();
             }
-        }
-
-        // Display plant details
-        function displayPlantDetails(plant) {
-            document.title = `${plant.name} - Taqi Garden`;
-            
-            // Set basic info
-            document.getElementById('plantName').textContent = plant.name;
-            document.getElementById('plantPrice').textContent = formatPrice(plant.price);
-            document.getElementById('plantCategory').textContent = formatCategory(plant.category);
-            
-            // Set image
-            const plantImage = document.getElementById('plantImage');
-            plantImage.src = plant.imageUrl || plant.img || 'https://via.placeholder.com/600x600?text=No+Image';
-            plantImage.alt = plant.name;
-            
-            // Set description and details
-            document.getElementById('plantDescription').textContent = plant.description || 'No description available.';
-            document.getElementById('plantLight').textContent = plant.light || 'Medium to bright, indirect light';
-            document.getElementById('plantWater').textContent = plant.water || 'Water when top inch of soil is dry';
-            document.getElementById('plantHumidity').textContent = plant.humidity || 'Average to high humidity';
-            document.getElementById('plantToxicity').textContent = plant.toxicity || 'Non-toxic to pets';
-            
-            // Update WhatsApp button
-            const whatsappBtn = document.getElementById('contactBtn');
-            const message = `Hello Taqi Garden, I'm interested in ${plant.name}. Can you tell me more about it?`;
-            whatsappBtn.onclick = () => {
-                window.open(`https://wa.me/6285862907657?text=${encodeURIComponent(message)}`, '_blank');
-            };
-            
-            // Show the content
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('plantDetail').classList.remove('hidden');
         }
 
         // Load similar plants
