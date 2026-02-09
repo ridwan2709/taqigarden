@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Artikel - Taqi Garden</title>
+    <meta name="description" content="Baca artikel lengkap tentang tanaman hias dan perawatan taman">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="img/logo.png" type="image/x-icon">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .article-content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+        }
+        .article-category {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #2d4a3e;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div id="header"></div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12 max-w-4xl">
+        <div id="loading" class="text-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#2d4a3e] mx-auto"></div>
+            <p class="mt-4 text-gray-600">Loading article...</p>
+        </div>
+
+        <div id="articleContainer" class="hidden">
+            <!-- Back Button -->
+            <a href="articles.html" class="inline-flex items-center text-[#2d4a3e] hover:text-[#1a2e25] mb-8">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Articles
+            </a>
+
+            <!-- Article Header -->
+            <header class="mb-8">
+                <div class="relative mb-6">
+                    <img id="articleImage" src="" alt="" class="w-full h-96 object-cover rounded-xl">
+                    <span id="articleCategory" class="article-category"></span>
+                </div>
+                <h1 id="articleTitle" class="text-3xl md:text-4xl font-bold text-gray-900 mb-4"></h1>
+                <div class="flex flex-wrap items-center text-sm text-gray-500 mb-4">
+                    <span id="articleDate" class="flex items-center mr-4">
+                        <i class="far fa-calendar-alt mr-1"></i> 
+                        <span id="dateText"></span>
+                    </span>
+                    <span id="readTime" class="flex items-center">
+                        <i class="far fa-clock mr-1"></i> 
+                        <span id="readTimeText">Just published</span>
+                    </span>
+                </div>
+            </header>
+
+            <!-- Article Content -->
+            <article class="bg-white rounded-xl shadow-sm p-6 md:p-8 mb-8 article-content">
+                <div id="articleContent"></div>
+            </article>
+
+            <!-- Share Buttons -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-12">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Share This Article</h3>
+                <div class="flex space-x-4">
+                    <a href="#" id="shareFacebook" class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" id="shareTwitter" class="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" id="shareWhatsapp" class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition-colors">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="#" id="copyLink" class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center hover:bg-gray-300 transition-colors">
+                        <i class="fas fa-link"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Related Articles -->
+            <div id="relatedArticles" class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">More Articles</h2>
+                <div id="relatedArticlesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Related articles will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden text-center py-12">
+            <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Article Not Found</h2>
+            <p class="text-gray-600 mb-6">Sorry, the article you're looking for cannot be found.</p>
+            <a href="articles.html" class="inline-block bg-[#2d4a3e] text-white px-6 py-2 rounded-lg hover:bg-[#1a2e25] transition-colors">
+                Back to Articles
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc,
+            collection,
+            query,
+            where,
+            limit,
+            getDocs,
+            orderBy
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA51F2pPZUWmdOaYqsihD78LTrvnXDqXn4",
+            authDomain: "taqi-4a756.firebaseapp.com",
+            projectId: "taqi-4a756",
+            storageBucket: "taqi-4a756.firebasestorage.app",
+            messagingSenderId: "836265831490",
+            appId: "1:836265831490:web:38277600db742f145451db"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // DOM elements
+        const loadingElement = document.getElementById('loading');
+        const articleContainer = document.getElementById('articleContainer');
+        const errorMessage = document.getElementById('errorMessage');
+        const articleTitle = document.getElementById('articleTitle');
+        const articleImage = document.getElementById('articleImage');
+        const articleCategory = document.getElementById('articleCategory');
+        const articleDate = document.getElementById('dateText');
+        const readTime = document.getElementById('readTimeText');
+        const articleContent = document.getElementById('articleContent');
+        const relatedArticlesGrid = document.getElementById('relatedArticlesGrid');
+
+        // Get article ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleId = urlParams.get('id');
+
+        // Function to format date
+        function formatDate(date) {
+            if (!date) return 'Date not available';
+            return new Intl.DateTimeFormat('en-US', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(date);
+        }
+
+        // Function to get category name
+        function getCategoryName(category) {
+            const categories = {
+                'perawatan': 'Care',
+                'tips': 'Tips & Tricks',
+                'inspirasi': 'Garden Inspiration'
+            };
+            return categories[category] || 'Article';
+        }
+
+        // Function to get category color
+        function getCategoryColor(category) {
+            const colors = {
+                'perawatan': '#2d4a3e',
+                'tips': '#4a7c6d',
+                'inspirasi': '#6b5b3a'
+            };
+            return colors[category] || '#2d4a3e';
+        }
+
+        // Function to load article
+        async function loadArticle() {
+            try {
+                if (!articleId) {
+                    throw new Error('Invalid article ID');
+                }
+
+                console.log('Loading article with ID:', articleId);
+                // Update the collection path to match the one in artikel.html
+                const articleRef = doc(db, 'artifacts/taqi-4a756/public/data/atricles', articleId);
+                console.log('Article reference created:', articleRef.path);
+                const articleSnap = await getDoc(articleRef);
+                console.log('Article snapshot exists:', articleSnap.exists());
+
+                if (!articleSnap.exists()) {
+                    throw new Error('Article not found');
+                }
+
+                const article = { id: articleSnap.id, ...articleSnap.data() };
+                console.log('Article data:', article);
+                console.log('Article fields:', {
+                    hasTitle: !!article.title,
+                    hasContent: !!article.content,
+                    hasCategory: !!article.category,
+                    hasCreatedAt: !!article.createdAt
+                });
+
+                // Update UI with article data
+                articleTitle.textContent = article.title;
+                articleImage.src = article.imageUrl || 'https://via.placeholder.com/800x450?text=Gambar+Artikel';
+                articleImage.alt = article.title;
+                articleCategory.textContent = getCategoryName(article.category);
+                articleCategory.style.backgroundColor = getCategoryColor(article.category);
+                
+                if (article.createdAt) {
+                    const date = article.createdAt.toDate();
+                    articleDate.textContent = formatDate(date);
+                    document.title = `${article.title} | Taqi Garden`;
+                    
+                    // Update meta description for SEO
+                    const metaDesc = document.querySelector('meta[name="description"]');
+                    if (metaDesc && article.content) {
+                        metaDesc.content = article.content.substring(0, 160) + (article.content.length > 160 ? '...' : '');
+                    }
+                }
+
+                // Update time since published
+                if (article.createdAt) {
+                    const updateTime = () => {
+                        const now = new Date();
+                        const published = article.createdAt.toDate();
+                        const diffInSeconds = Math.floor((now - published) / 1000);
+                        
+                        const minute = 60;
+                        const hour = minute * 60;
+                        const day = hour * 24;
+                        const month = day * 30;
+                        const year = day * 365;
+
+                        let timeText;
+                        if (diffInSeconds < minute) {
+                            timeText = 'Just published';
+                        } else if (diffInSeconds < hour) {
+                            const minutes = Math.floor(diffInSeconds / minute);
+                            timeText = `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+                        } else if (diffInSeconds < day) {
+                            const hours = Math.floor(diffInSeconds / hour);
+                            timeText = `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+                        } else if (diffInSeconds < month) {
+                            const days = Math.floor(diffInSeconds / day);
+                            timeText = `${days} ${days === 1 ? 'day' : 'days'} ago`;
+                        } else if (diffInSeconds < year) {
+                            const months = Math.floor(diffInSeconds / month);
+                            timeText = `${months} ${months === 1 ? 'month' : 'months'} ago`;
+                        } else {
+                            const years = Math.floor(diffInSeconds / year);
+                            timeText = `${years} ${years === 1 ? 'year' : 'years'} ago`;
+                        }
+                        
+                        readTimeText.textContent = timeText;
+                    };
+                    
+                    // Update immediately
+                    updateTime();
+                    
+                    // Update every minute
+                    setInterval(updateTime, 60000);
+                }
+
+                // Set article content
+                if (article.content) {
+                    // Simple formatting for line breaks
+                    const formattedContent = article.content.replace(/\n/g, '</p><p>');
+                    articleContent.innerHTML = `<p>${formattedContent}</p>`;
+                }
+
+                // Load related articles
+                await loadRelatedArticles(article.category, article.id);
+
+                // Show article container
+                articleContainer.classList.remove('hidden');
+                loadingElement.classList.add('hidden');
+
+                // Initialize share buttons
+                initializeShareButtons(article);
+
+            } catch (error) {
+                console.error('Error loading article:', error);
+                loadingElement.classList.add('hidden');
+                errorMessage.classList.remove('hidden');
+            }
+        }
+
+        // Function to load related articles
+        async function loadRelatedArticles(category, currentArticleId) {
+            try {
+                const articlesRef = collection(db, 'articles');
+                const q = query(
+                    articlesRef,
+                    where('category', '==', category),
+                    orderBy('createdAt', 'desc'),
+                    limit(3)
+                );
+
+                const querySnapshot = await getDocs(q);
+                const relatedArticles = [];
+
+                querySnapshot.forEach((doc) => {
+                    if (doc.id !== currentArticleId) {
+                        relatedArticles.push({ id: doc.id, ...doc.data() });
+                    }
+                });
+
+                // If no related articles in the same category, get latest articles
+                if (relatedArticles.length === 0) {
+                    const latestQuery = query(
+                        articlesRef,
+                        orderBy('createdAt', 'desc'),
+                        limit(3)
+                    );
+                    
+                    const latestSnapshot = await getDocs(latestQuery);
+                    latestSnapshot.forEach((doc) => {
+                        if (doc.id !== currentArticleId) {
+                            relatedArticles.push({ id: doc.id, ...doc.data() });
+                        }
+                    });
+                }
+
+                // Display related articles
+                if (relatedArticles.length > 0) {
+                    relatedArticlesGrid.innerHTML = relatedArticles.map(article => `
+                        <article class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                            <a href="article-detail.html?id=${article.id}" class="block">
+                                <div class="relative">
+                                    <img src="${article.imageUrl || 'https://via.placeholder.com/400x225?text=No+Image'}" 
+                                         alt="${article.title}" 
+                                         class="w-full h-48 object-cover">
+                                    <span class="absolute top-2 right-2 bg-[#2d4a3e] text-white text-xs px-2 py-1 rounded-full">
+                                        ${getCategoryName(article.category)}
+                                    </span>
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-gray-800 mb-2 line-clamp-2">${article.title}</h3>
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <span>${article.readTime || '5'} min read</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </article>
+                    `).join('');
+                } else {
+                    document.getElementById('relatedArticles').classList.add('hidden');
+                }
+
+            } catch (error) {
+                console.error('Error loading related articles:', error);
+                document.getElementById('relatedArticles').classList.add('hidden');
+            }
+        }
+
+        // Function to initialize share buttons
+        function initializeShareButtons(article) {
+            const currentUrl = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(article.title);
+            const text = encodeURIComponent(article.content ? article.content.substring(0, 100) + '...' : '');
+            
+            // Set share URLs
+            document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`;
+            document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?url=${currentUrl}&text=${title}`;
+            document.getElementById('shareWhatsapp').href = `https://wa.me/?text=${title}%20${currentUrl}`;
+            
+            // Copy link functionality
+            document.getElementById('copyLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    const tooltip = document.createElement('div');
+                    tooltip.textContent = 'Tautan disalin!';
+                    tooltip.className = 'absolute bg-black text-white text-xs rounded py-1 px-2 -mt-10';
+                    e.target.appendChild(tooltip);
+                    setTimeout(() => tooltip.remove(), 2000);
+                });
+            });
+        }
+
+        // Load header and footer
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load header
+            fetch('includes/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header').innerHTML = data;
+                    // Add active class to current page in navigation
+                    const navLinks = document.querySelectorAll('.nav-link');
+                    navLinks.forEach(link => {
+                        if (link.getAttribute('href') === 'artikel.html') {
+                            link.classList.add('text-[#2d4a3e]', 'font-medium');
+                            link.classList.add('active');
+                        }
+                    });
+                });
+
+            // Load footer
+            fetch('includes/footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('footer').innerHTML = data;
+                });
+
+            // Load article
+            loadArticle();
+        });
+    </script>
+</body>
+</html>

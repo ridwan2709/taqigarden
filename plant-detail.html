@@ -198,13 +198,14 @@
         const urlParams = new URLSearchParams(window.location.search);
         const plantId = urlParams.get('id');
 
-        // Format price to IDR
+        // Format price to USD
         function formatPrice(price) {
             if (!price && price !== 0) return 'Price not available';
-            return new Intl.NumberFormat('id-ID', {
+            return new Intl.NumberFormat('en-US', {
                 style: 'currency',
-                currency: 'IDR',
-                maximumFractionDigits: 0
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             }).format(price);
         }
 
@@ -285,7 +286,7 @@
                     // Update the UI with translated plant data
                     document.getElementById('plantName').textContent = plant.name; // Keep plant name in original language
                     document.getElementById('plantCategory').textContent = translatedPlant.category;
-                    document.getElementById('plantPrice').textContent = `Rp ${plant.price ? plant.price.toLocaleString('id-ID') : '0'}`;
+                    document.getElementById('plantPrice').textContent = formatPrice(plant.price);
                     document.getElementById('plantImage').src = plant.imageUrl || 'https://via.placeholder.com/600x600?text=No+Image';
                     document.getElementById('plantDescription').textContent = translatedPlant.description || 'No description available.';
                     document.getElementById('plantLight').textContent = translatedPlant.light || '-';
