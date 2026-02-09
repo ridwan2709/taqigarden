@@ -530,6 +530,84 @@
                 renderProducts(getPaginatedProducts());
             });
         });
+      document.addEventListener('DOMContentLoaded', function() {
+    // Get the category from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+    
+    // Map URL parameters to your filter system
+    const categoryToFilterMap = {
+        'all': 'all',
+        'indoor': 'indoor',
+        'outdoor': 'outdoor',
+        'succulent': 'succulent',
+        'flowering': 'flowering',
+        'herbs': 'herbs'
+    };
+ 
+    // Function to set the active filter and trigger filtering
+    function setActiveFilter(filterValue) {
+        // Update the current filter
+        currentFilter = filterValue;
+        
+        // Update the active state of filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-category') === filterValue);
+        });
+        
+        // Trigger the filter
+        filterProducts();
+    }
+ 
+    // If we have a category from URL, apply it
+    if (category && categoryToFilterMap[category]) {
+        // Set a small timeout to ensure all elements are loaded
+        setTimeout(() => {
+            setActiveFilter(categoryToFilterMap[category]);
+        }, 100);
+    }
+ 
+    // Update your existing filter function to handle the new categories
+    function filterProducts() {
+        filteredProducts = allProducts.filter(product => {
+            // Check if product matches search term
+            const matchesSearch = !currentSearch || 
+                (product.name && product.name.toLowerCase().includes(currentSearch)) ||
+                (product.category && product.category.toLowerCase().includes(currentSearch));
+            
+            // Check if product matches selected filter
+            if (currentFilter === 'all') return matchesSearch;
+            
+            const productCategory = product.category?.toLowerCase() || '';
+            
+            // Handle different category formats and languages
+            const categoryMatches = {
+                'indoor': productCategory.includes('indoor') || productCategory.includes('dalam'),
+                'outdoor': productCategory.includes('outdoor') || productCategory.includes('luar'),
+                'succulent': productCategory.includes('succulent') || productCategory.includes('sukulen'),
+                'flowering': productCategory.includes('flowering') || productCategory.includes('berbunga'),
+                'herbs': productCategory.includes('herb') || productCategory.includes('rempah')
+            };
+            
+            return matchesSearch && (categoryMatches[currentFilter] || false);
+        });
+        
+        // Reset to first page when filters change
+        currentPage = 1;
+        updatePagination();
+        renderProducts(getPaginatedProducts());
+    }
+ 
+    // Update your filter buttons to use the setActiveFilter function
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const filterValue = this.getAttribute('data-category');
+            const newUrl = `${window.location.pathname}?category=${filterValue}`;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+            setActiveFilter(filterValue);
+        });
+    });
+});
     </script>
 </body>
 </html>

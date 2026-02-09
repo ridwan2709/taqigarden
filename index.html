@@ -168,6 +168,7 @@
             transition: transform 0.3s ease-in-out;
         }
     </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -177,27 +178,66 @@
     </a>
 
     <!-- Header / Navbar -->
-    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="flex flex-col leading-none">
-                    <img src="img/logo.png" alt="Logo" class="w-24 h-19">
-                </div>
-            </div>
+    <!-- Header / Navbar -->
+    <header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+    <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <!-- Left Navigation -->
+        <ul class="flex space-x-8 text-sm font-medium text-gray-700">
+           <li class="relative group" id="shopDropdown">
+        <a href="#" class="hover:text-gray-900 flex items-center" id="shopLink">
+            Shop
+            <i class="fas fa-chevron-down ml-1 text-xs transition-transform duration-200"></i>
+        </a>
+        <!-- Dropdown Menu -->
+       <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden" id="shopMenu">
+            <a href="koleksi.html?category=all" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">All Plants</a>
+            <a href="koleksi.html?category=indoor" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Indoor Plants</a>
+            <a href="koleksi.html?category=outdoor" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Outdoor Plants</a>
+            <a href="koleksi.html?category=succulent" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Succulents</a>
+            <a href="koleksi.html?category=flowering" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Flowering Plants</a>
+            <a href="koleksi.html?category=herbs" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Herbs</a>
+        </div>
+    </li>
+            <li><a href="#" class="hover:text-gray-900">Wholesale</a></li>
+            <li><a href="#" class="hover:text-gray-900">Explore</a></li>
+        </ul>
 
-            <ul class="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-widest text-gray-700 ml-10">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#shop" class="nav-link">Collection</a></li>
-                <li><a href="#about" class="nav-link">About Us</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
-            </ul>
+        <!-- Center Logo -->
+        <div class="absolute left-1/2 transform -translate-x-1/2">
+            <img src="img/logo.png" alt="Logo" class="h-10 w-auto">
+        </div>
 
-            <div class="flex items-center space-x-5">
-                <!-- <button class="text-gray-700 hover:text-[#4f7962]"><i class="fas fa-search"></i></button>
-                <button class="text-gray-700 hover:text-[#4f7962]"><i class="fas fa-shopping-bag"></i></button> -->
-                <button id="menu-toggle" class="md:hidden text-gray-700"><i class="fas fa-bars text-xl"></i></button>
+        <!-- Right Icons -->
+<div class="flex items-center space-x-6">
+    <!-- Search Container -->
+    <div class="relative">
+        <button id="search-toggle" class="text-gray-600 hover:text-gray-900 focus:outline-none">
+            <i class="fas fa-search text-lg"></i>
+        </button>
+        <div id="search-container" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-50">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Cari tanaman..." 
+                    class="w-full px-4 py-2 pr-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent"
+                >
+                <button id="search-close" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        </nav>
+            <div id="search-results" class="max-h-60 overflow-y-auto mt-1 border-t border-gray-100 hidden">
+                <!-- Search results will be populated here by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- User Button -->
+    <button class="text-gray-600 hover:text-gray-900">
+        <i class="far fa-user text-lg"></i>
+    </button>
+</div>
+    </nav>
     </header>
 
     <!-- Mobile Menu Overlay -->
@@ -605,6 +645,80 @@
                 });
             }
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+    const searchToggle = document.getElementById('search-toggle');
+    const searchContainer = document.getElementById('search-container');
+    const searchInput = document.getElementById('search-input');
+    const searchClose = document.getElementById('search-close');
+    const searchResults = document.getElementById('search-results');
+    // Toggle search input
+    searchToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        searchContainer.classList.toggle('hidden');
+        if (!searchContainer.classList.contains('hidden')) {
+            searchInput.focus();
+        }
+    });
+    // Close search when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchContainer.contains(e.target) && e.target !== searchToggle) {
+            searchContainer.classList.add('hidden');
+        }
+    });
+    // Close button
+    searchClose.addEventListener('click', function() {
+        searchContainer.classList.add('hidden');
+    });
+    // Handle search input
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.trim().toLowerCase();
+        
+        if (searchTerm.length > 0) {
+            // Here you would typically make an API call to search for plants
+            // For now, we'll use a placeholder function
+            searchPlants(searchTerm);
+        } else {
+            searchResults.classList.add('hidden');
+        }
+    });
+    // Example search function - replace with your actual search implementation
+    function searchPlants(query) {
+        // This is a placeholder - replace with your actual search logic
+        // You would typically make an API call to your backend here
+        
+        // Example of how you might handle the search results
+        const mockResults = [
+            { name: 'Monstera Deliciosa', url: 'koleksi.html?search=monstera' },
+            { name: 'Fiddle Leaf Fig', url: 'koleksi.html?search=fig' },
+            { name: 'Snake Plant', url: 'koleksi.html?search=snake' }
+        ].filter(plant => 
+            plant.name.toLowerCase().includes(query)
+        );
+        displaySearchResults(mockResults);
+    }
+    function displaySearchResults(results) {
+        searchResults.innerHTML = '';
+        
+        if (results.length === 0) {
+            const noResults = document.createElement('div');
+            noResults.className = 'p-3 text-gray-500 text-sm';
+            noResults.textContent = 'Tidak ada hasil ditemukan';
+            searchResults.appendChild(noResults);
+        } else {
+            results.forEach(item => {
+                const resultItem = document.createElement('a');
+                resultItem.href = item.url;
+                resultItem.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100';
+                resultItem.textContent = item.name;
+                searchResults.appendChild(resultItem);
+            });
+        }
+        
+        searchResults.classList.remove('hidden');
+    }
+});
     </script>
+    <script src="js/script.js"></script>
 </body>
 </html>
