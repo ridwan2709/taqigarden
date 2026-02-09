@@ -24,12 +24,28 @@
                 </div>
             </li>
             <li><a href="wholesale.html" class="hover:text-gray-900">Wholesale</a></li>
-            <li><a href="#" class="hover:text-gray-900">Explore</a></li>
+            <li class="relative group" id="eksploreDropdown">
+                <a href="#" class="hover:text-gray-900 flex items-center" id="eksploreLink">
+                    Eksplore
+                    <i class="fas fa-chevron-down ml-1 text-xs transition-transform duration-200" id="eksploreArrow"></i>
+                </a>
+                <!-- Dropdown Menu -->
+                <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50" id="eksploreMenu">
+                    <a href="article.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Article</a>
+                    <a href="cargo.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cargo Shipment Policy</a>
+                    <a href="contact.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contact Us</a>
+                    <a href="story.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Our Story</a>
+                    <a href="service.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Service Requirement</a>
+                    <a href="term.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Term & Condition</a>
+                </div>
+            </li>
         </ul>
 
         <!-- Center Logo -->
         <div class="absolute left-1/2 transform -translate-x-1/2">
-            <a href="index.html" class="text-2xl font-bold text-gray-900 brand-font">TAQI GARDEN</a>
+            <a href="index.html" class="text-2xl font-bold text-gray-900 brand-font">
+                <img src="img/logo.png" alt="TAQI GARDEN" class="h-12">
+            </a>
         </div>
 
         <!-- Right Navigation -->
@@ -96,62 +112,125 @@
 </div>
 
 <script>
-// Mobile menu toggle
-const mobileMenu = document.getElementById('mobile-menu');
-const openMenuBtn = document.querySelector('[aria-label="Open menu"]');
-const closeMenuBtn = document.getElementById('close-menu');
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    const mobileMenu = document.getElementById('mobile-menu');
+    const openMenuBtn = document.querySelector('[aria-label="Open menu"]');
+    const closeMenuBtn = document.getElementById('close-menu');
 
-if (openMenuBtn) {
-    openMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.remove('translate-x-full');
-        document.body.style.overflow = 'hidden';
-    });
-}
+    if (openMenuBtn && mobileMenu) {
+        openMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('translate-x-full');
+            document.body.style.overflow = 'hidden';
+        });
+    }
 
-if (closeMenuBtn) {
-    closeMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.add('translate-x-full');
-        document.body.style.overflow = '';
-    });
-}
+    if (closeMenuBtn && mobileMenu) {
+        closeMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('translate-x-full');
+            document.body.style.overflow = '';
+        });
+    }
 
-// Shop dropdown
-const shopLink = document.getElementById('shopLink');
-const shopMenu = document.getElementById('shopMenu');
+    // Eksplore dropdown
+    const eksploreLink = document.getElementById('eksploreLink');
+    const eksploreMenu = document.getElementById('eksploreMenu');
+    const shopLink = document.getElementById('shopLink');
+    const shopMenu = document.getElementById('shopMenu');
 
-if (shopLink && shopMenu) {
-    shopLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        shopMenu.classList.toggle('hidden');
-        shopLink.querySelector('i').classList.toggle('transform');
-        shopLink.querySelector('i').classList.toggle('rotate-180');
-    });
+    if (eksploreLink && eksploreMenu) {
+        eksploreLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle eksplore menu
+            eksploreMenu.classList.toggle('hidden');
+            const icon = eksploreLink.querySelector('i');
+            if (icon) {
+                icon.style.transform = eksploreMenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+            
+            // Close shop menu if open
+            if (shopMenu && !shopMenu.classList.contains('hidden')) {
+                shopMenu.classList.add('hidden');
+                const shopIcon = shopLink.querySelector('i');
+                if (shopIcon) {
+                    shopIcon.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
 
-    // Close when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!shopLink.contains(e.target) && !shopMenu.contains(e.target)) {
-            shopMenu.classList.add('hidden');
-            shopLink.querySelector('i').classList.remove('transform', 'rotate-180');
-        }
-    });
-}
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#eksploreDropdown')) {
+                eksploreMenu.classList.add('hidden');
+                const icon = eksploreLink.querySelector('i');
+                if (icon) {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
+    }
 
-// Search functionality
-const searchToggle = document.getElementById('search-toggle');
-const searchContainer = document.getElementById('search-container');
-const searchClose = document.getElementById('search-close');
+    // Shop dropdown
+    if (shopLink && shopMenu) {
+        shopLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle shop menu
+            shopMenu.classList.toggle('hidden');
+            const icon = shopLink.querySelector('i');
+            if (icon) {
+                icon.style.transform = shopMenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+            
+            // Close eksplore menu if open
+            if (eksploreMenu && !eksploreMenu.classList.contains('hidden')) {
+                eksploreMenu.classList.add('hidden');
+                const eksploreIcon = eksploreLink.querySelector('i');
+                if (eksploreIcon) {
+                    eksploreIcon.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
 
-if (searchToggle && searchContainer && searchClose) {
-    searchToggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        searchContainer.classList.toggle('hidden');
-        if (!searchContainer.classList.contains('hidden')) {
-            document.getElementById('search-input').focus();
-        }
-    });
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#shopDropdown')) {
+                shopMenu.classList.add('hidden');
+                const icon = shopLink.querySelector('i');
+                if (icon) {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
+    }
 
-    searchClose.addEventListener('click', () => {
-        searchContainer.classList.add('hidden');
-    });
-}
+    // Search functionality
+    const searchToggle = document.getElementById('search-toggle');
+    const searchContainer = document.getElementById('search-container');
+    const searchClose = document.getElementById('search-close');
+    const searchInput = document.getElementById('search-input');
+
+    if (searchToggle) {
+        searchToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (searchContainer) {
+                searchContainer.classList.toggle('hidden');
+                if (!searchContainer.classList.contains('hidden') && searchInput) {
+                    searchInput.focus();
+                }
+            }
+        });
+    }
+
+    if (searchClose) {
+        searchClose.addEventListener('click', () => {
+            if (searchContainer) {
+                searchContainer.classList.add('hidden');
+            }
+        });
+    }
+});
 </script>
