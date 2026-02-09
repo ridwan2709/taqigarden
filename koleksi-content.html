@@ -1,0 +1,470 @@
+<!-- Products Section -->
+<section class="py-6">
+    <div class="container mx-auto">
+        <!-- Filter & Search -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div class="flex flex-wrap gap-2" id="filterContainer">
+                <button class="filter-btn active px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" onclick="filterProducts('semua')">Semua</button>
+                <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" onclick="filterProducts('indoor')">Indoor</button>
+                <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" onclick="filterProducts('langka')">Langka</button>
+                <button class="filter-btn px-4 py-1.5 rounded-full border border-[#2d4a3e] text-xs md:text-sm uppercase tracking-wider transition" onclick="filterProducts('sukulen')">Sukulen</button>
+            </div>
+            <div class="relative w-full md:w-64">
+                <input type="text" id="searchInput" placeholder="Cari tanaman..." 
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none text-sm">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="text-center py-20 text-[#2d4a3e]">
+            <i class="fas fa-circle-notch fa-spin text-4xl"></i>
+            <p class="mt-4">Memuat koleksi...</p>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+</section>
+
+<!-- Add Plant Button (Floating) -->
+<button id="addPlantBtn" class="fixed bottom-8 right-8 bg-[#2d4a3e] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-[#4f7962] transition-transform hover:scale-105">
+    <i class="fas fa-plus text-xl"></i>
+</button>
+
+<!-- Add/Edit Plant Modal -->
+<div id="addPlantModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h3 class="text-xl font-bold brand-font text-[#2d4a3e]" id="modalTitle">Tambah Tanaman Baru</h3>
+            <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <form id="addPlantForm" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Tanaman</label>
+                <input type="text" id="pName" required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                <select id="pCategory" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
+                    <option value="indoor">Indoor</option>
+                    <option value="langka">Langka</option>
+                    <option value="sukulen">Sukulen</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp)</label>
+                <input type="text" id="pPrice" placeholder="Contoh: 150000" required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">URL Gambar</label>
+                <input type="url" id="pImg" placeholder="https://example.com/image.jpg" required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
+            </div>
+            <div class="pt-4">
+                <button type="submit" 
+                    class="w-full bg-[#2d4a3e] text-white py-3 rounded-lg hover:bg-[#4f7962] transition font-semibold">
+                    <i class="fas fa-plus mr-2"></i> Tambah Tanaman
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+    import { 
+        getFirestore, 
+        collection, 
+        addDoc, 
+        query, 
+        orderBy, 
+        onSnapshot,
+        deleteDoc,
+        doc,
+        updateDoc
+    } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyA51F2pPZUWmdOaYqsihD78LTrvnXDqXn4",
+        authDomain: "taqi-4a756.firebaseapp.com",
+        projectId: "taqi-4a756",
+        storageBucket: "taqi-4a756.firebasestorage.app",
+        messagingSenderId: "836265831490",
+        appId: "1:836265831490:web:38277600db742f145451db"
+    };
+    
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+    
+    // Global variables
+    let currentEditingId = null;
+    let isFormHandlerAttached = false;
+    let products = [];
+    let unsubscribeFromProducts = null;
+    
+    // Initialize the page
+    function initializeCollectionPage() {
+        setupFormHandlers();
+        setupModalHandlers();
+        setupAuthListener();
+    }
+    
+    // Set up form handlers
+    function setupFormHandlers() {
+        const addPlantForm = document.getElementById('addPlantForm');
+        if (!addPlantForm || isFormHandlerAttached) return;
+        
+        // Remove any existing event listeners by cloning the form
+        const newForm = addPlantForm.cloneNode(true);
+        addPlantForm.parentNode.replaceChild(newForm, addPlantForm);
+        
+        // Add the event listener to the new form
+        newForm.addEventListener('submit', handleFormSubmit);
+        isFormHandlerAttached = true;
+    }
+    
+    // Set up modal handlers
+    function setupModalHandlers() {
+        // Open modal button
+        const addPlantBtn = document.getElementById('addPlantBtn');
+        if (addPlantBtn) {
+            addPlantBtn.addEventListener('click', () => {
+                currentEditingId = null;
+                document.getElementById('addPlantModal').classList.remove('hidden');
+                document.getElementById('addPlantForm').reset();
+                const submitBtn = document.querySelector('#addPlantForm button[type="submit"]');
+                submitBtn.innerHTML = '<i class="fas fa-plus mr-2"></i> Tambah Tanaman';
+                document.getElementById('modalTitle').textContent = 'Tambah Tanaman Baru';
+            });
+        }
+        
+        // Close modal button
+        const closeBtn = document.getElementById('closeModalBtn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                document.getElementById('addPlantModal').classList.add('hidden');
+                document.getElementById('addPlantForm').reset();
+                currentEditingId = null;
+            });
+        }
+    }
+    
+    // Handle form submission
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        const form = e.target;
+        
+        // Prevent multiple submissions
+        if (form.dataset.submitting === 'true') return;
+        form.dataset.submitting = 'true';
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        try {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            
+            const plantData = {
+                name: document.getElementById('pName').value.trim(),
+                category: document.getElementById('pCategory').value,
+                price: parseInt(document.getElementById('pPrice').value.replace(/\D/g, '') || '0'),
+                imageUrl: document.getElementById('pImg').value.trim(),
+                updatedAt: new Date().toISOString()
+            };
+
+            if (!plantData.name || !plantData.imageUrl) {
+                throw new Error('Nama tanaman dan URL gambar harus diisi');
+            }
+
+            if (currentEditingId) {
+                // Update existing document
+                await updateDoc(doc(db, 'artifacts/taqi-4a756/public/data/plants', currentEditingId), plantData);
+                currentEditingId = null;
+            } else {
+                // Add new document
+                plantData.createdAt = new Date().toISOString();
+                await addDoc(collection(db, 'artifacts/taqi-4a756/public/data/plants'), plantData);
+            }
+            
+            // Reset form and close modal
+            form.reset();
+            document.getElementById('addPlantModal').classList.add('hidden');
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+            form.dataset.submitting = 'false';
+        }
+    }
+    
+    // Delete plant function
+    async function deletePlant(plantId) {
+        if (!confirm('Apakah Anda yakin ingin menghapus tanaman ini?')) {
+            return;
+        }
+
+        try {
+            await deleteDoc(doc(db, 'artifacts/taqi-4a756/public/data/plants', plantId));
+        } catch (error) {
+            console.error('Error deleting document: ', error);
+            alert('Gagal menghapus tanaman. Silakan coba lagi.');
+        }
+    }
+    
+    // Edit plant function
+    function editPlant(plantId) {
+        currentEditingId = plantId;
+        const plant = products.find(p => p.id === plantId);
+        
+        if (plant) {
+            // Fill the form with plant data
+            document.getElementById('pName').value = plant.name || '';
+            document.getElementById('pCategory').value = plant.category || 'indoor';
+            document.getElementById('pPrice').value = plant.price ? plant.price.toString() : '';
+            document.getElementById('pImg').value = plant.imageUrl || '';
+            
+            // Update UI
+            document.getElementById('modalTitle').textContent = 'Edit Tanaman';
+            const submitBtn = document.querySelector('#addPlantForm button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Simpan Perubahan';
+            
+            // Show the modal
+            document.getElementById('addPlantModal').classList.remove('hidden');
+        }
+    }
+    
+    // Render products to the DOM
+    function renderProducts(products) {
+        const productGrid = document.getElementById('productGrid');
+        if (!productGrid) return;
+        
+        if (products.length === 0) {
+            productGrid.innerHTML = `
+                <div class="col-span-full text-center py-12 text-gray-500">
+                    <i class="fas fa-leaf text-4xl mb-4"></i>
+                    <p>Belum ada tanaman yang ditambahkan.</p>
+                </div>`;
+            return;
+        }
+        
+        productGrid.innerHTML = products.map(product => `
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow relative group">
+                <div class="h-48 bg-gray-100 overflow-hidden relative">
+                    <img src="${product.imageUrl}" alt="${product.name}" 
+                        class="w-full h-full object-cover">
+                    <div class="absolute top-2 right-2 flex gap-2">
+                        <button onclick="editPlant('${product.id}')" 
+                                class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deletePlant('${product.id}')" 
+                                class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <span class="inline-block px-2 py-1 text-xs font-semibold text-white bg-${getCategoryColor(product.category)}-500 rounded-full mb-2">
+                        ${formatCategory(product.category)}
+                    </span>
+                    <h3 class="font-semibold text-lg mb-1">${product.name}</h3>
+                    <p class="text-[#2d4a3e] font-bold">${formatPrice(product.price)}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Helper functions
+    function formatPrice(price) {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0
+        }).format(price);
+    }
+    
+    function formatCategory(category) {
+        const categories = {
+            'indoor': 'Indoor',
+            'langka': 'Langka',
+            'sukulen': 'Sukulen'
+        };
+        return categories[category] || category;
+    }
+    
+    function getCategoryColor(category) {
+        const colors = {
+            'indoor': 'blue',
+            'langka': 'purple',
+            'sukunen': 'green'
+        };
+        return colors[category] || 'gray';
+    }
+    
+    // Set up authentication listener
+    function setupAuthListener() {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, load plants
+                loadPlants();
+            } else {
+                // User is signed out, redirect to login
+                window.location.href = 'login.html';
+            }
+        });
+    }
+    
+    // Load plants from Firestore
+    function loadPlants() {
+        const productGrid = document.getElementById('productGrid');
+        const loadingElement = document.getElementById('loading');
+        
+        // Show loading state
+        if (loadingElement) loadingElement.classList.remove('hidden');
+        if (productGrid) productGrid.innerHTML = '';
+        
+        try {
+            // Set up real-time listener for plants collection
+            const q = query(
+                collection(db, 'artifacts/taqi-4a756/public/data/plants'), 
+                orderBy('createdAt', 'desc')
+            );
+            
+            // Unsubscribe from previous listener if exists
+            if (unsubscribeFromProducts) {
+                unsubscribeFromProducts();
+            }
+            
+            unsubscribeFromProducts = onSnapshot(q, (querySnapshot) => {
+                products = [];
+                querySnapshot.forEach((doc) => {
+                    products.push({ id: doc.id, ...doc.data() });
+                });
+                
+                renderProducts(products);
+                if (loadingElement) loadingElement.classList.add('hidden');
+            });
+            
+        } catch (error) {
+            console.error('Error loading plants:', error);
+            if (loadingElement) {
+                loadingElement.innerHTML = `
+                    <div class="text-red-600">
+                        <p>Gagal memuat daftar tanaman.</p>
+                        <button onclick="window.location.reload()" class="mt-2 px-4 py-2 bg-red-100 rounded">
+                            Coba Lagi
+                        </button>
+                    </div>`;
+            }
+        }
+    }
+    
+    // Initialize the page when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', initializeCollectionPage);
+    
+    // Make functions available globally
+    window.editPlant = editPlant;
+    window.deletePlant = deletePlant;
+    window.initializeCollectionPage = initializeCollectionPage;
+
+     // Add filter functionality
+    function filterProducts(category) {
+        // Update active button state
+        document.querySelectorAll('#filterContainer .filter-btn').forEach(btn => {
+            btn.classList.remove('bg-[#2d4a3e]', 'text-white');
+            btn.classList.add('border', 'border-[#2d4a3e]', 'hover:bg-gray-100');
+        });
+        
+        // Set active state for clicked button
+        const activeBtn = Array.from(document.querySelectorAll('#filterContainer .filter-btn'))
+            .find(btn => btn.textContent.toLowerCase().includes(category));
+        if (activeBtn) {
+            activeBtn.classList.add('bg-[#2d4a3e]', 'text-white');
+            activeBtn.classList.remove('border', 'hover:bg-gray-100');
+        }
+        
+        // Filter products
+        const filteredProducts = category === 'semua' 
+            ? products 
+            : products.filter(product => product.category === category);
+        
+        // Render filtered products
+        renderProducts(filteredProducts);
+    }
+    // Update initializeCollectionPage function
+    const originalInitialize = window.initializeCollectionPage;
+    window.initializeCollectionPage = function() {
+        // Call original initialize function
+        if (originalInitialize) originalInitialize();
+        
+        // Initialize filter buttons
+        const filterButtons = document.querySelectorAll('#filterContainer .filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('bg-[#2d4a3e]', 'text-white');
+                    btn.classList.add('border', 'border-[#2d4a3e]', 'hover:bg-gray-100');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('bg-[#2d4a3e]', 'text-white');
+                this.classList.remove('border', 'hover:bg-gray-100');
+            });
+        });
+        
+        // Set initial active state for "Semua" button
+        const semuaBtn = document.querySelector('#filterContainer .filter-btn');
+        if (semuaBtn) {
+            semuaBtn.classList.add('bg-[#2d4a3e]', 'text-white');
+            semuaBtn.classList.remove('border', 'hover:bg-gray-100');
+        }
+        
+        // Initialize search
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const category = document.querySelector('#filterContainer .bg-\\[\\#2d4a3e\\]')?.textContent.toLowerCase() || 'semua';
+                let filteredProducts = [...products];
+                
+                // Apply category filter
+                if (category !== 'semua') {
+                    filteredProducts = filteredProducts.filter(p => p.category === category);
+                }
+                
+                // Apply search filter
+                if (searchTerm) {
+                    filteredProducts = filteredProducts.filter(p => 
+                        p.name.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                renderProducts(filteredProducts);
+            });
+        }
+    };
+    // Make filterProducts available globally
+    window.filterProducts = filterProducts;
+    // Re-initialize to apply the new functionality
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        window.initializeCollectionPage();
+    }
+</script>
+</body>
+</html>
