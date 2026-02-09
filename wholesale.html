@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wholesale - Taqi Garden</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap');
+        :root { --primary-green: #2d4a3e; --accent-green: #4f7962; --cream: #f9f7f2; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--cream); color: #333; }
+        h1, h2, h3, .brand-font { font-family: 'Playfair Display', serif; }
+        .form-input:focus { border-color: var(--accent-green); box-shadow: 0 0 0 1px var(--accent-green); }
+        .btn-primary { background-color: var(--primary-green); transition: all 0.3s ease; }
+        .btn-primary:hover { background-color: var(--accent-green); transform: translateY(-2px); }
+        
+       .whatsapp-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+       .whatsapp-btn:hover {
+            transform: scale(1.1);
+            background-color: #128c7e;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20am%20interested%20in%20your%20wholesale%20offers." target="_blank" class="whatsapp-btn" title="Chat WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <!-- Header will be loaded here by JavaScript -->
+    <div id="header-placeholder"></div>
+    <script src="js/header-loader.js"></script>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-cover bg-center py-20" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/1603912699217-0141c0dff308?auto=format&fit=crop&w=1350&q=80');">
+        <div class="container mx-auto px-6 text-center text-white">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Wholesale Inquiries</h1>
+            <p class="text-xl md:text-2xl">Grow your business with Taqi Garden's premium plant selection</p>
+        </div>
+    </section>
+
+    <!-- Wholesale Form -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Save More with Wholesale Purchases</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Wholesale Plants Only at Kamle Plants! <br>
+Welcome to Kamle Plants! Let’s grow together through our special wholesale deals.</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-8 md:p-10">
+               <ol>
+                <li type="1">
+                    <strong>View Our Wholesale Price List</strong>
+                </li>
+                <p class="text-gray-600">Find attractive wholesale offers by contacting us at the contacts we provide. You will get a price list with a very complete plant.</p>
+                <p class="text-gray-600">Note: The prices listed on our website are retail prices. As a wholesale customer, you will receive greater discounts and much lower rates!</p>
+                <li type="1" class="mt-12">
+                    <strong> Minimum Order Quantity</strong>
+                </li>
+                <p class="text-gray-600">To qualify for wholesale pricing, a minimum order of 50 pcs is required.</p>
+                <li type="1" class="mt-12">
+                    <strong>Exclusive Discounts</strong>
+                </li>
+                <p class="text-gray-600">Enjoy more affordable prices for wholesale purchases. The discounts you receive may be even greater, depending on the type of plants you choose!</p>
+                <li type="1" class="mt-12">
+                    <strong> Wholesale Purchase Procedure</strong>
+                </li>
+                <p class="text-gray-600">To make a wholesale purchase, prior communication is necessary. All transactions will be conducted outside of our website.</p>
+                <li type="1" class="mt-12">
+                    <strong>Terms & Conditions</strong>
+                </li>
+                <p class="text-gray-600">Please take the time to read and understand our full business Terms & Conditions by visiting the following link: <a href="terms.html" class="text-blue-600 hover:underline">Terms & Conditions</a>.</p>
+                
+               </ol>
+               <p class="text-gray-600 mt-2 mb-12"><small>Contact us For reservations</small></p>
+               <div class="text-center">
+                <a href="https://wa.me/966555555555" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors mt-12">Contact us via WhatsApp</a><br><br>
+                <a href="mailto:info@taqi-garden.com" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors mt-12">Email us at : info@taqi-garden.com</a>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- Footer will be loaded here by JavaScript -->
+<div id="footer-placeholder"></div>
+<script src="js/footer-loader.js"></script>
+
+</body>
+</html>
