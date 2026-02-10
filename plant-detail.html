@@ -54,32 +54,9 @@
     <a href="https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20am%20interested%20in%20your%20plant%20collection." target="_blank" class="whatsapp-btn" title="Contact via WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
-
-    <!-- Header -->
-    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center space-x-2">
-                <div class="flex flex-col leading-none">
-                    <span class="text-2xl font-bold text-[#2d4a3e] tracking-tighter">TAQI</span>
-                    <span class="text-xs tracking-[0.3em] font-semibold text-gray-500 uppercase">Garden</span>
-                </div>
-            </a>
-            <ul class="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-widest text-gray-700">
-                <li><a href="index.html" class="hover:text-[#4f7962]">Home</a></li>
-                <li><a href="koleksi.html" class="hover:text-[#4f7962]">Collection</a></li>
-                <li><a href="index.html#about" class="hover:text-[#4f7962]">About Us</a></li>
-            </ul>
-            <button id="menu-toggle" class="md:hidden text-gray-700"><i class="fas fa-bars text-xl"></i></button>
-        </nav>
-    </header>
-
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-8 text-2xl font-bold uppercase tracking-widest translate-x-full md:hidden">
-        <button id="menu-close" class="absolute top-6 right-6 text-3xl">&times;</button>
-        <a href="index.html" class="hover:text-[#4f7962]" onclick="toggleMenu()">Home</a>
-        <a href="koleksi.html" class="hover:text-[#4f7962]" onclick="toggleMenu()">Collection</a>
-        <a href="index.html#about" class="hover:text-[#4f7962]" onclick="toggleMenu()">About Us</a>
-    </div>
+     <!-- Header will be loaded here by JavaScript -->
+    <div id="header-placeholder"></div>
+    <script src="js/header-loader.js"></script>
 
     <!-- Plant Detail Section -->
     <section class="py-12 md:py-20">
@@ -155,15 +132,26 @@
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="bg-[#2d4a3e] text-white py-12">
-        <div class="container mx-auto px-6 text-center">
-            <div class="brand-font text-3xl mb-4">TAQI Garden</div>
-            <p class="text-gray-400 text-sm mb-8">Best quality, safe delivery, peace of mind.</p>
-            <p class="text-xs text-gray-500">&copy; 2026 Taqi Garden Indonesia. All Rights Reserved.</p>
-        </div>
-    </footer>
+    <!-- Footer will be loaded here by JavaScript -->
+    <div id="footer-placeholder"></div>
+    <script type="module" src="js/footer-loader.js"></script>
+    
+    <script>
+        // Pastikan DOM sudah dimuat sepenuhnya
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi komponen JavaScript di sini jika diperlukan
+            console.log('Cargo page loaded successfully');
+            
+            // Contoh inisialisasi komponen (sesuaikan dengan kebutuhan)
+            const whatsappBtn = document.querySelector('.whatsapp-btn');
+            if (whatsappBtn) {
+                whatsappBtn.addEventListener('click', function() {
+                    // Track WhatsApp click jika diperlukan
+                    console.log('WhatsApp button clicked');
+                });
+            }
+        });
+    </script>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -385,15 +373,18 @@
             mobileMenu.classList.toggle('translate-x-0');
         }
 
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            // Toggle mobile menu
-            document.getElementById('menu-toggle').addEventListener('click', toggleMenu);
-            document.getElementById('menu-close').addEventListener('click', toggleMenu);
-            
-            // Load plant details
-            loadPlantDetails();
-        });
+       // Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Toggle mobile menu - only if elements exist
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuClose = document.getElementById('menu-close');
+    
+    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+    if (menuClose) menuClose.addEventListener('click', toggleMenu);
+    
+    // Load plant details
+    loadPlantDetails();
+});
     </script>
 </body>
 </html>
