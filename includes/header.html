@@ -9,12 +9,12 @@
         <!-- Left Navigation -->
         <ul class="flex space-x-8 text-sm font-medium text-gray-700">
             <li class="relative group" id="shopDropdown">
-                <a href="#" class="hover:text-gray-900 flex items-center" id="shopLink">
+                <a href="koleksi.html" class="hover:text-gray-900 flex items-center" id="shopLink" onmouseover="document.getElementById('shopMenu').classList.remove('hidden')" onmouseout="document.getElementById('shopMenu').classList.add('hidden')" onclick="event.preventDefault(); document.getElementById('shopMenu').classList.toggle('hidden'); this.querySelector('i').classList.toggle('rotate-180')">
                     Shop
                     <i class="fas fa-chevron-down ml-1 text-xs transition-transform duration-200"></i>
                 </a>
                 <!-- Dropdown Menu -->
-                <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden" id="shopMenu">
+                <div class="absolute left-0 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden" id="shopMenu" onmouseover="this.classList.remove('hidden')" onmouseout="this.classList.add('hidden')">
                     <a href="koleksi.html?category=all" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">All Plants</a>
                     <a href="koleksi.html?category=indoor" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Indoor Plants</a>
                     <a href="koleksi.html?category=outdoor" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Outdoor Plants</a>
@@ -24,21 +24,21 @@
                 </div>
             </li>
             <li><a href="wholesale.html" class="hover:text-gray-900">Wholesale</a></li>
-            <li class="relative group" id="eksploreDropdown">
-                <a href="#" class="hover:text-gray-900 flex items-center" id="eksploreLink">
-                    Explore
-                    <i class="fas fa-chevron-down ml-1 text-xs transition-transform duration-200"></i>
-                </a>
-                <!-- Dropdown Menu -->
-                <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50" id="eksploreMenu">
-                    <a href="artikel.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Article</a>
-                    <a href="cargo.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cargo Shipment</a>
-                    <a href="contact.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contact Us</a>
-                    <a href="story.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Our Story</a>
-                    <a href="service.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Service Requirement</a>
-                    <a href="term.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Terms & Conditions</a>
-                </div>
-            </li>
+            <li class="relative group inline-flex items-center cursor-pointer">
+  <div class="flex items-center gap-1 text-gray-700 group-hover:text-gray-900">
+    <span>Explore</span>
+    <i class="fas fa-chevron-down text-[10px] transition-transform group-hover:rotate-180"></i>
+  </div>
+
+  <ul class="absolute top-full left-0 mt-2 w-52 bg-white border border-gray-100 shadow-xl rounded-md py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+    <li><a href="artikel.html" class="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-600 hover:text-white">Article</a></li>
+    <li><a href="cargo.html" class="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-600 hover:text-white">Cargo Shipment</a></li>
+    <li><a href="contact.html" class="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-600 hover:text-white">Contact Us</a></li>
+    <li><a href="story.html" class="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-600 hover:text-white">Our Story</a></li>
+    <li><a href="service.html" class="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-600 hover:text-white">Service Requirement</a></li>
+    <li><a href="term.html" class="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-600 hover:text-white border-t mt-1">Terms & Conditions</a></li>
+  </ul>
+</li>
         </ul>
 
         <!-- Center Logo -->
@@ -137,48 +137,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Dropdown functionality
-    const setupDropdown = (linkId, menuId, dropdownId) => {
-        const link = document.getElementById(linkId);
-        const menu = document.getElementById(menuId);
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        const shopLink = document.getElementById('shopLink');
+        const shopMenu = document.getElementById('shopMenu');
         
-        if (link && menu) {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Check if this menu is currently hidden
-                const isHidden = menu.classList.contains('hidden');
-                
-                // Close all dropdowns first
-                document.querySelectorAll('.relative.group').forEach(dropdown => {
-                    const otherMenu = dropdown.querySelector('div[id$="Menu"]');
-                    const otherLink = dropdown.querySelector('a');
-                    const otherIcon = otherLink?.querySelector('i');
-                    
-                    if (otherMenu) {
-                        otherMenu.classList.add('hidden');
-                        if (otherIcon) {
-                            otherIcon.style.transform = 'rotate(0deg)';
-                        }
-                    }
-                });
-                
-                // Toggle current menu if it was hidden
-                if (isHidden) {
-                    menu.classList.remove('hidden');
-                    const icon = link.querySelector('i');
-                    if (icon) {
-                        icon.style.transform = 'rotate(180deg)';
-                    }
-                }
-            });
+        if (shopLink && shopMenu && !shopLink.contains(e.target) && !shopMenu.contains(e.target)) {
+            shopMenu.classList.add('hidden');
+            const icon = shopLink.querySelector('i');
+            if (icon) {
+                icon.style.transform = 'rotate(0deg)';
+            }
         }
-    };
-    
-    // Initialize dropdowns
-    setupDropdown('shopLink', 'shopMenu', 'shopDropdown');
-    setupDropdown('eksploreLink', 'eksploreMenu', 'eksploreDropdown');
+    });
 
     // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
