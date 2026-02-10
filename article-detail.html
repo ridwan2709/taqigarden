@@ -45,6 +45,39 @@
             text-transform: capitalize;
         }
     </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap');
+        :root { --primary-green: #2d4a3e; --accent-green: #4f7962; --cream: #f9f7f2; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--cream); color: #333; }
+        h1, h2, h3, .brand-font { font-family: 'Playfair Display', serif; }
+        .form-input:focus { border-color: var(--accent-green); box-shadow: 0 0 0 1px var(--accent-green); }
+        .btn-primary { background-color: var(--primary-green); transition: all 0.3s ease; }
+        .btn-primary:hover { background-color: var(--accent-green); transform: translateY(-2px); }
+        
+       .whatsapp-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+       .whatsapp-btn:hover {
+            transform: scale(1.1);
+            background-color: #128c7e;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
