@@ -661,5 +661,108 @@
     }
 });
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Slider elements
+        const slider = document.querySelector('.slider-container');
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        let currentSlide = 0;
+        let slideInterval;
+
+        // Function to show a specific slide
+        function showSlide(index) {
+            // Wrap around if index is out of bounds
+            currentSlide = (index + slides.length) % slides.length;
+            
+            // Update slides
+            slides.forEach((slide, i) => {
+                if (i === currentSlide) {
+                    slide.style.opacity = '1';
+                    slide.style.visibility = 'visible';
+                } else {
+                    slide.style.opacity = '0';
+                    slide.style.visibility = 'hidden';
+                }
+            });
+
+            // Update dots
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        // Go to next slide
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        // Go to previous slide
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Set slide by index
+        window.setSlide = function(index) {
+            showSlide(index);
+            resetTimer();
+        };
+
+        // Reset the timer
+        function resetTimer() {
+            clearInterval(slideInterval);
+            startSlider();
+        }
+
+        // Start the slider
+        function startSlider() {
+            slideInterval = setInterval(() => {
+                nextSlide();
+            }, 5000); // Change slide every 5 seconds
+        }
+
+        // Initialize slider
+        showSlide(0);
+        startSlider();
+
+        // Touch events for mobile
+        if (slider) {
+            let touchStartX = 0;
+            let touchEndX = 0;
+            const minSwipeDistance = 50;
+
+            slider.addEventListener('touchstart', e => {
+                touchStartX = e.touches[0].clientX;
+                clearInterval(slideInterval);
+            }, { passive: true });
+
+            slider.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].clientX;
+                handleSwipe();
+                resetTimer();
+            }, { passive: true });
+
+            function handleSwipe() {
+                const swipeDistance = Math.abs(touchEndX - touchStartX);
+                if (swipeDistance > minSwipeDistance) {
+                    if (touchEndX < touchStartX) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                }
+            }
+
+            // Pause on hover (desktop)
+            slider.addEventListener('mouseenter', () => {
+                clearInterval(slideInterval);
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                resetTimer();
+            });
+        }
+    });
+</script>
 </body>
 </html>
