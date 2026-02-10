@@ -287,14 +287,39 @@
         function formatCategory(category) {
             if (!category) return 'Plant';
             const categories = {
-                'indoor': 'Indoor Plant',
-                'outdoor': 'Outdoor Plant',
-                'langka': 'Rare Plant',
-                'sukulen': 'Succulent',
-                'hias': 'Ornamental Plant',
-                'monstera': 'Monstera',
                 'aglaonema': 'Aglaonema',
-                'philodendron': 'Philodendron'
+                'alocasia': 'Alocasia',
+                'amydrium': 'Amydrium',
+                'anthurium': 'Anthurium',
+                'anthurium_hybrid': 'Anthurium Hybrid',
+                'ardisia': 'Ardisia',
+                'begonia': 'Begonia',
+                'caladium': 'Caladium',
+                'calathea': 'Calathea',
+                'costus': 'Costus',
+                'cercestis': 'Cercestis Mirabillis',
+                'cnidoscolus': 'Cnidoscolus Aconitifolius',
+                'dieffenbachia': 'Dieffenbachia',
+                'epipremnum': 'Epipremnum',
+                'homalomena': 'Homalomena',
+                'hoya': 'Hoya',
+                'labisia': 'Labisia',
+                'monstera': 'Monstera',
+                'musa_banana': 'Musa Banana',
+                'palm': 'Palm',
+                'peperomia': 'Peperomia',
+                'philodendron': 'Philodendron',
+                'piper': 'Piper',
+                'plumeria': 'Plumeria',
+                'pothos': 'Pothos',
+                'raphidophora': 'Raphidophora',
+                'scindapsus': 'Scindapsus',
+                'schismatoglottis': 'Schismatoglottis',
+                'spathiphyllum': 'Spathiphyllum',
+                'syngonium': 'Syngonium',
+                'thaumatophyllum': 'Thaumatophyllum',
+                'xanthosoma': 'Xanthosoma',
+                'zamioculcas': 'Zamioculcas Zamiifolia'
             };
             return categories[category.toLowerCase()] || category.charAt(0).toUpperCase() + category.slice(1);
         }
@@ -302,14 +327,39 @@
         function getCategoryClass(category) {
             if (!category) return 'bg-gray-100 text-gray-800';
             const classes = {
-                'indoor': 'bg-blue-50 text-blue-800',
-                'outdoor': 'bg-green-50 text-green-800',
-                'langka': 'bg-purple-50 text-purple-800',
-                'sukulen': 'bg-teal-50 text-teal-800',
-                'hias': 'bg-pink-50 text-pink-800',
-                'monstera': 'bg-amber-50 text-amber-800',
                 'aglaonema': 'bg-red-50 text-red-800',
-                'philodendron': 'bg-emerald-50 text-emerald-800'
+                'alocasia': 'bg-blue-50 text-blue-800',
+                'amydrium': 'bg-indigo-50 text-indigo-800',
+                'anthurium': 'bg-pink-50 text-pink-800',
+                'anthurium_hybrid': 'bg-rose-50 text-rose-800',
+                'ardisia': 'bg-purple-50 text-purple-800',
+                'begonia': 'bg-fuchsia-50 text-fuchsia-800',
+                'caladium': 'bg-violet-50 text-violet-800',
+                'calathea': 'bg-cyan-50 text-cyan-800',
+                'costus': 'bg-teal-50 text-teal-800',
+                'cercestis': 'bg-emerald-50 text-emerald-800',
+                'cnidoscolus': 'bg-green-50 text-green-800',
+                'dieffenbachia': 'bg-lime-50 text-lime-800',
+                'epipremnum': 'bg-yellow-50 text-yellow-800',
+                'homalomena': 'bg-amber-50 text-amber-800',
+                'hoya': 'bg-orange-50 text-orange-800',
+                'labisia': 'bg-red-100 text-red-900',
+                'monstera': 'bg-blue-100 text-blue-900',
+                'musa_banana': 'bg-green-100 text-green-900',
+                'palm': 'bg-yellow-100 text-yellow-900',
+                'peperomia': 'bg-purple-100 text-purple-900',
+                'philodendron': 'bg-emerald-50 text-emerald-800',
+                'piper': 'bg-teal-100 text-teal-900',
+                'plumeria': 'bg-pink-100 text-pink-900',
+                'pothos': 'bg-indigo-100 text-indigo-900',
+                'raphidophora': 'bg-cyan-100 text-cyan-900',
+                'scindapsus': 'bg-blue-50 text-blue-800',
+                'schismatoglottis': 'bg-violet-100 text-violet-900',
+                'spathiphyllum': 'bg-purple-100 text-purple-900',
+                'syngonium': 'bg-fuchsia-100 text-fuchsia-900',
+                'thaumatophyllum': 'bg-rose-100 text-rose-900',
+                'xanthosoma': 'bg-amber-100 text-amber-900',
+                'zamioculcas': 'bg-green-50 text-green-800'
             };
             return classes[category.toLowerCase()] || 'bg-gray-100 text-gray-800';
         }
