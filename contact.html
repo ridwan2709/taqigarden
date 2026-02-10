@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Taqi Garden</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap');
+        :root { 
+            --primary-green: #2d4a3e; 
+            --accent-green: #4f7962; 
+            --cream: #f9f7f2; 
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--cream); 
+            color: #333; 
+        }
+        h1, h2, h3, .brand-font { 
+            font-family: 'Playfair Display', serif; 
+        }
+        .form-input:focus { 
+            border-color: var(--accent-green); 
+            box-shadow: 0 0 0 1px var(--accent-green); 
+        }
+        .btn-primary { 
+            background-color: var(--primary-green); 
+            transition: all 0.3s ease; 
+        }
+        .btn-primary:hover { 
+            background-color: var(--accent-green); 
+            transform: translateY(-2px); 
+        }
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+            background-color: #128c7e;
+        }
+        .contact-info-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .contact-info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20have%20a%20question" 
+       target="_blank" 
+       class="whatsapp-btn" 
+       title="Chat WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Header will be loaded here by JavaScript -->
+    <div id="header-placeholder"></div>
+    <script type="module" src="js/header-loader.js"></script>
+
+    <!-- Hero Section -->
+    <section class="bg-cover bg-center py-20" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/1603912699217-0141c0dff308?auto=format&fit=crop&w=1350&q=80');">
+        <div class="container mx-auto px-6 text-center text-white">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
+            <p class="text-xl md:text-2xl">We'd love to hear from you</p>
+        </div>
+    </section>
+
+    <!-- Contact Information -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Get in Touch</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Have questions about our plants or need assistance? Reach out to us using the information below or fill out the contact form.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <!-- Contact Card 1 -->
+                <div class="contact-info-card bg-white p-8 rounded-lg shadow-md text-center">
+                    <div class="bg-green-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-map-marker-alt text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Our Location</h3>
+                    <p class="text-gray-600">Kp Cipianang Gading RT01 RW04 No 09,<br>Kelurahan Ranga Mekar,<br>Kecamatan Bogor Selatan 16136,<br>Kota Bogor, Jawa Barat, Indonesia</p>
+                </div>
+
+                <!-- Contact Card 2 -->
+                <div class="contact-info-card bg-white p-8 rounded-lg shadow-md text-center">
+                    <div class="bg-green-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-phone-alt text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Phone Number</h3>
+                    <p class="text-gray-600 mb-2">+62 858-6290-7657</p>
+                    <p class="text-sm text-gray-500">Mon - Fri, 9:00 AM - 5:00 PM WIB</p>
+                </div>
+
+                <!-- Contact Card 3 -->
+                <div class="contact-info-card bg-white p-8 rounded-lg shadow-md text-center">
+                    <div class="bg-green-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-envelope text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Email Us</h3>
+                    <p class="text-gray-600">info@taqigarden.com</p>
+                    <p class="text-sm text-gray-500 mt-2">We'll respond within 24 hours</p>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 bg-green-600 p-8 text-white">
+                        <h3 class="text-2xl font-bold mb-4">Send Us a Message</h3>
+                        <p class="mb-6">Have questions about our plants or need assistance? Fill out the form and we'll get back to you as soon as possible.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle mr-2 text-green-200"></i>
+                                <span>24/7 Customer Support</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle mr-2 text-green-200"></i>
+                                <span>Expert Plant Care Advice</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle mr-2 text-green-200"></i>
+                                <span>Quick Response Time</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 p-8">
+                        <form id="contactForm" class="space-y-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" id="name" name="name" required 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <input type="email" id="email" name="email" required 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                <input type="text" id="subject" name="subject" required 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+                                <textarea id="message" name="message" rows="4" required 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                            </div>
+                            <button type="submit" 
+                                class="w-full bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition-colors font-medium">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="bg-gray-100 py-12">
+        <div class="container mx-auto px-4">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.0413923652344!2d106.79765631534313!3d-6.651384366187799!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c8f0a6a7a7a7d%3A0x1a3b3b3b3b3b3b3b!2sTaqi%20Garden!5e0!3m2!1sen!2sid!4v1620000000000!5m2!1sen!2sid" 
+                    width="100%" 
+                    height="450" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy"
+                    class="w-full h-96"
+                    title="Taqi Garden Location">
+                </iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+                <p class="text-gray-600">Find answers to common questions about our products and services.</p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 focus:outline-none">
+                        <span class="font-medium">What are your business hours?</span>
+                        <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-answer px-6 py-4 bg-white hidden">
+                        <p class="text-gray-600">We're available Monday to Friday from 9:00 AM to 5:00 PM WIB. You can reach us via phone, email, or our contact form during these hours.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 focus:outline-none">
+                        <span class="font-medium">Do you ship internationally?</span>
+                        <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-answer px-6 py-4 bg-white hidden">
+                        <p class="text-gray-600">Yes, we ship internationally! Please contact us with your location and the plants you're interested in, and we'll provide you with shipping options and costs.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 focus:outline-none">
+                        <span class="font-medium">How do I care for my new plants?</span>
+                        <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-answer px-6 py-4 bg-white hidden">
+                        <p class="text-gray-600">Each plant comes with care instructions. You can also find detailed care guides on our website or contact us for personalized advice. We're happy to help you keep your plants thriving!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer will be loaded here by JavaScript -->
+    <div id="footer-placeholder"></div>
+    <script type="module" src="js/footer-loader.js"></script>
+
+    <script>
+        // FAQ Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+                    
+                    // Toggle answer visibility
+                    answer.classList.toggle('hidden');
+                    
+                    // Toggle icon rotation
+                    icon.classList.toggle('transform');
+                    icon.classList.toggle('rotate-180');
+                    
+                    // Toggle active state
+                    this.classList.toggle('bg-gray-100');
+                });
+            });
+
+            // Form submission handling
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Here you would typically send the form data to a server
+                    alert('Thank you for your message! We will get back to you soon.');
+                    this.reset();
+                });
+            }
+
+            // Initialize any other components here
+            console.log('Contact page loaded successfully');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wholesale - Taqi Garden</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap');
+        :root { --primary-green: #2d4a3e; --accent-green: #4f7962; --cream: #f9f7f2; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--cream); color: #333; }
+        h1, h2, h3, .brand-font { font-family: 'Playfair Display', serif; }
+        .form-input:focus { border-color: var(--accent-green); box-shadow: 0 0 0 1px var(--accent-green); }
+        .btn-primary { background-color: var(--primary-green); transition: all 0.3s ease; }
+        .btn-primary:hover { background-color: var(--accent-green); transform: translateY(-2px); }
+        
+       .whatsapp-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+       .whatsapp-btn:hover {
+            transform: scale(1.1);
+            background-color: #128c7e;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20am%20interested%20in%20your%20wholesale%20offers." target="_blank" class="whatsapp-btn" title="Chat WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <!-- Header will be loaded here by JavaScript -->
+    <div id="header-placeholder"></div>
+    <script src="js/header-loader.js"></script>
+
+    <!-- Hero Section -->
+    <section class="bg-cover bg-center py-20" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/1603912699217-0141c0dff308?auto=format&fit=crop&w=1350&q=80');">
+        <div class="container mx-auto px-6 text-center text-white">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Our Story</h1>
+        </div>
+    </section>
+
+    <!-- Story Content -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="flex flex-col items-center mb-12">
+            <div class="flex items-center gap-6 mb-6">
+                <div class="relative">
+                    <img src="img/profile.jpeg" alt="Taqi Garden" class="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                </div>
+                <div class="h-20 w-px bg-gray-300"></div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-green-600">🌿</span>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Our Story – Taqi Garden</h2>
+                    </div>
+                </div>
+            </div>
+            <p class="text-gray-600 text-center text-lg max-w-2xl">
+                More than just plants — it's a decade of passion, growth, and green dreams.
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <!-- Your story content goes here -->
+            <p class="text-gray-700 mb-4">
+                At KamlePlants, our journey began over 10 years ago, rooted in a deep love for nature and the joy of growing life from the soil. What started as a small backyard hobby has blossomed into a thriving business — trusted by plant lovers across the country.
+            </p>
+            <!-- Add more story content as needed -->
+            <!-- Your story content goes here -->
+            <p class="text-gray-700 mb-4">
+                Over the years, we’ve nurtured thousands of plants, studied their unique characters, and learned what it takes to keep them happy and healthy. From soil selection to sunlight care, every leaf we grow carries the care and experience of a decade-long dedication.
+            </p>
+            <!-- Add more story content as needed -->
+            <p class="text-gray-700 mb-4">
+                We’re proud to not only grow plants, but also to grow trust. With every order, we deliver more than just greenery — we deliver a piece of our story, and a little bit of nature to your home.
+            </p>
+            <!-- Add more story content as needed -->
+            <!-- Add more story content as needed -->
+            <p class="text-gray-700 mb-4">
+                Whether you’re a beginner or a seasoned plant parent, KamlePlants is here to support your plant journey — one pot at a time.
+            </p>
+            <!-- Add more story content as needed -->
+            <!-- Add more story content as needed -->
+            <p class="text-gray-700 mb-4">
+                Let’s grow together. 🌱
+            </p>
+            <!-- Add more story content as needed -->
+        </div>
+    </div>
+</section>
+    <!-- Footer will be loaded here by JavaScript -->
+    <div id="footer-placeholder"></div>
+    <script type="module" src="js/footer-loader.js"></script>
+    
+    <script>
+        // Pastikan DOM sudah dimuat sepenuhnya
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi komponen JavaScript di sini jika diperlukan
+            console.log('Cargo page loaded successfully');
+            
+            // Contoh inisialisasi komponen (sesuaikan dengan kebutuhan)
+            const whatsappBtn = document.querySelector('.whatsapp-btn');
+            if (whatsappBtn) {
+                whatsappBtn.addEventListener('click', function() {
+                    // Track WhatsApp click jika diperlukan
+                    console.log('WhatsApp button clicked');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

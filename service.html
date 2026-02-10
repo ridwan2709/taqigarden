@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Requirements - Taqi Garden</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap');
+        :root { --primary-green: #2d4a3e; --accent-green: #4f7962; --cream: #f9f7f2; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--cream); color: #333; }
+        h1, h2, h3, .brand-font { font-family: 'Playfair Display', serif; }
+        .form-input:focus { border-color: var(--accent-green); box-shadow: 0 0 0 1px var(--accent-green); }
+        .btn-primary { background-color: var(--primary-green); transition: all 0.3s ease; }
+        .btn-primary:hover { background-color: var(--accent-green); transform: translateY(-2px); }
+        
+       .whatsapp-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+       .whatsapp-btn:hover {
+            transform: scale(1.1);
+            background-color: #128c7e;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/6285862907657?text=Hello%20Taqi%20Garden,%20I%20am%20interested%20in%20your%20wholesale%20offers." target="_blank" class="whatsapp-btn" title="Chat WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <!-- Header will be loaded here by JavaScript -->
+    <div id="header-placeholder"></div>
+    <script src="js/header-loader.js"></script>
+
+    <!-- Hero Section -->
+    <section class="bg-cover bg-center py-20" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/1603912699217-0141c0dff308?auto=format&fit=crop&w=1350&q=80');">
+        <div class="container mx-auto px-6 text-center text-white">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Service Requirements</h1>
+        </div>
+    </section>
+
+    <!-- Story Content -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="flex flex-col items-center mb-12">
+            <div class="flex items-center gap-6 mb-6">
+                <div class="relative">
+                    <!-- <img src="img/profile.jpeg" alt="Taqi Garden" class="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow-lg"> -->
+                </div>
+                <!-- <div class="h-20 w-px bg-gray-300"></div> -->
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-green-600"></span>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Service Requirements</h2>
+                    </div>
+                </div>
+            </div>
+            <p class="text-gray-600 text-center text-lg max-w-2xl">
+                More than just plants — it's a decade of passion, growth, and green dreams.
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <div class="space-y-8">
+                <!-- Service Requirement 1 -->
+                <div class="border-l-4 border-green-600 pl-6 py-2">
+                    <ol class="text-gray-600 ml-2">
+                        <li type="1">The seller must send photos of the plants purchased by the customer</li>
+                        <li type="1" class="mt-2">Seller shall provide phytosanitary and invoice (optional)</li>
+                        <li type="1" class="mt-2">The seller is responsible for inspection in Indonesia. once the package is shipped, all inspection in the destination country is the responsibility of the buyer</li>
+                        <li type="1" class="mt-2">Buyer is required to provide shipping instructions to comply with destination country regulations</li>
+                        <li type="1" class="mt-2">If no instructions are given, then the seller will use the usual standards and the buyer has no right to sue if there is a problem.</li>
+                        <li type="1" class="mt-2">All problems will be resolved in a family manner</li>
+                        <li type="1" class="mt-2">It is possible that there will be damage to the plant and this is a shipping risk that must be accepted by the buyer.</li>
+                        <li type="1" class="mt-2">If the plants sent are damaged or rotten, a replacement will be given on the condition of placing a reorder. And the damaged plants will be sent together with the new order.</li>
+                        <li type="1" class="mt-2">There are no refunds unless other terms are agreed upon.</li>
+                        <li type="1" class="mt-2">All taxes and inspection fees in the destination country are the responsibility of the buyer.</li>
+                        <li type="1" class="mt-2">Applicable regulations in Indonesia for exports are required to apply for an export license which is a prerequisite for making phytosanitary. so consumers must wait for the export license to be issued.</li>
+                        <li type="1" class="mt-2">Every shipment made will be checked through laboratory tests by the Indonesian plant quarantine agency. So consumers must wait for the check to be completed</li>
+                        <li type="1" class="mt-2">The process of applying for an export license and checking the laboratory is about 1-2 weeks</li>
+                    </ol>
+                </div>
+        
+        
+                <!-- Contact Information -->
+                <!-- <div class="mt-10 p-6 bg-green-50 rounded-lg">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Need Assistance?</h3>
+                    <p class="text-gray-600 mb-4">Our customer service team is here to help with any questions about our services or requirements.</p>
+                    <a href="https://wa.me/6285862907657" 
+                    target="_blank" 
+                    class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fab fa-whatsapp mr-2"></i> Chat on WhatsApp
+                    </a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+    <!-- Footer will be loaded here by JavaScript -->
+    <div id="footer-placeholder"></div>
+    <script type="module" src="js/footer-loader.js"></script>
+    
+    <script>
+        // Pastikan DOM sudah dimuat sepenuhnya
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi komponen JavaScript di sini jika diperlukan
+            console.log('Cargo page loaded successfully');
+            
+            // Contoh inisialisasi komponen (sesuaikan dengan kebutuhan)
+            const whatsappBtn = document.querySelector('.whatsapp-btn');
+            if (whatsappBtn) {
+                whatsappBtn.addEventListener('click', function() {
+                    // Track WhatsApp click jika diperlukan
+                    console.log('WhatsApp button clicked');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

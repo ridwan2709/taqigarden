@@ -26,17 +26,17 @@
             <li><a href="wholesale.html" class="hover:text-gray-900">Wholesale</a></li>
             <li class="relative group" id="eksploreDropdown">
                 <a href="#" class="hover:text-gray-900 flex items-center" id="eksploreLink">
-                    Eksplore
-                    <i class="fas fa-chevron-down ml-1 text-xs transition-transform duration-200" id="eksploreArrow"></i>
+                    Explore
+                    <i class="fas fa-chevron-down ml-1 text-xs transition-transform duration-200"></i>
                 </a>
                 <!-- Dropdown Menu -->
                 <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50" id="eksploreMenu">
                     <a href="artikel.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Article</a>
-                    <a href="cargo.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cargo Shipment Policy</a>
+                    <a href="cargo.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cargo Shipment</a>
                     <a href="contact.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contact Us</a>
                     <a href="story.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Our Story</a>
                     <a href="service.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Service Requirement</a>
-                    <a href="term.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Term & Condition</a>
+                    <a href="term.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Terms & Conditions</a>
                 </div>
             </li>
         </ul>
@@ -112,11 +112,16 @@
 </div>
 
 <script>
+// Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
     const mobileMenu = document.getElementById('mobile-menu');
     const openMenuBtn = document.querySelector('[aria-label="Open menu"]');
     const closeMenuBtn = document.getElementById('close-menu');
+    const searchToggle = document.getElementById('search-toggle');
+    const searchContainer = document.getElementById('search-container');
+    const searchClose = document.getElementById('search-close');
+    const searchInput = document.getElementById('search-input');
 
     if (openMenuBtn && mobileMenu) {
         openMenuBtn.addEventListener('click', () => {
@@ -132,87 +137,74 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Eksplore dropdown
-    const eksploreLink = document.getElementById('eksploreLink');
-    const eksploreMenu = document.getElementById('eksploreMenu');
-    const shopLink = document.getElementById('shopLink');
-    const shopMenu = document.getElementById('shopMenu');
-
-    if (eksploreLink && eksploreMenu) {
-        eksploreLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Toggle eksplore menu
-            eksploreMenu.classList.toggle('hidden');
-            const icon = eksploreLink.querySelector('i');
-            if (icon) {
-                icon.style.transform = eksploreMenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
-            }
-            
-            // Close shop menu if open
-            if (shopMenu && !shopMenu.classList.contains('hidden')) {
-                shopMenu.classList.add('hidden');
-                const shopIcon = shopLink.querySelector('i');
-                if (shopIcon) {
-                    shopIcon.style.transform = 'rotate(0deg)';
+    // Dropdown functionality
+    const setupDropdown = (linkId, menuId, dropdownId) => {
+        const link = document.getElementById(linkId);
+        const menu = document.getElementById(menuId);
+        
+        if (link && menu) {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Check if this menu is currently hidden
+                const isHidden = menu.classList.contains('hidden');
+                
+                // Close all dropdowns first
+                document.querySelectorAll('.relative.group').forEach(dropdown => {
+                    const otherMenu = dropdown.querySelector('div[id$="Menu"]');
+                    const otherLink = dropdown.querySelector('a');
+                    const otherIcon = otherLink?.querySelector('i');
+                    
+                    if (otherMenu) {
+                        otherMenu.classList.add('hidden');
+                        if (otherIcon) {
+                            otherIcon.style.transform = 'rotate(0deg)';
+                        }
+                    }
+                });
+                
+                // Toggle current menu if it was hidden
+                if (isHidden) {
+                    menu.classList.remove('hidden');
+                    const icon = link.querySelector('i');
+                    if (icon) {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
                 }
-            }
-        });
+            });
+        }
+    };
+    
+    // Initialize dropdowns
+    setupDropdown('shopLink', 'shopMenu', 'shopDropdown');
+    setupDropdown('eksploreLink', 'eksploreMenu', 'eksploreDropdown');
 
-        // Close when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#eksploreDropdown')) {
-                eksploreMenu.classList.add('hidden');
-                const icon = eksploreLink.querySelector('i');
-                if (icon) {
-                    icon.style.transform = 'rotate(0deg)';
-                }
-            }
-        });
-    }
-
-    // Shop dropdown
-    if (shopLink && shopMenu) {
-        shopLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Toggle shop menu
-            shopMenu.classList.toggle('hidden');
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        const shopLink = document.getElementById('shopLink');
+        const shopMenu = document.getElementById('shopMenu');
+        const eksploreLink = document.getElementById('eksploreLink');
+        const eksploreMenu = document.getElementById('eksploreMenu');
+        
+        if (shopLink && shopMenu && !shopLink.contains(e.target) && !shopMenu.contains(e.target)) {
+            shopMenu.classList.add('hidden');
             const icon = shopLink.querySelector('i');
             if (icon) {
-                icon.style.transform = shopMenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+                icon.style.transform = 'rotate(0deg)';
             }
-            
-            // Close eksplore menu if open
-            if (eksploreMenu && !eksploreMenu.classList.contains('hidden')) {
-                eksploreMenu.classList.add('hidden');
-                const eksploreIcon = eksploreLink.querySelector('i');
-                if (eksploreIcon) {
-                    eksploreIcon.style.transform = 'rotate(0deg)';
-                }
+        }
+        
+        if (eksploreLink && eksploreMenu && !eksploreLink.contains(e.target) && !eksploreMenu.contains(e.target)) {
+            eksploreMenu.classList.add('hidden');
+            const icon = eksploreLink.querySelector('i');
+            if (icon) {
+                icon.style.transform = 'rotate(0deg)';
             }
-        });
-
-        // Close when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#shopDropdown')) {
-                shopMenu.classList.add('hidden');
-                const icon = shopLink.querySelector('i');
-                if (icon) {
-                    icon.style.transform = 'rotate(0deg)';
-                }
-            }
-        });
-    }
+        }
+    });
 
     // Search functionality
-    const searchToggle = document.getElementById('search-toggle');
-    const searchContainer = document.getElementById('search-container');
-    const searchClose = document.getElementById('search-close');
-    const searchInput = document.getElementById('search-input');
-
     if (searchToggle) {
         searchToggle.addEventListener('click', (e) => {
             e.preventDefault();
@@ -232,5 +224,5 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
+}); // End of DOMContentLoaded
 </script>
