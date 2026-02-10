@@ -370,14 +370,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        // Format price to IDR
+        // Format price to USD
         function formatPrice(price) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                maximumFractionDigits: 0
-            }).format(price || 0);
-        }
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+       }).format(price);
+    }
         
         // Load featured products
         async function loadFeaturedProducts() {
@@ -419,7 +420,7 @@
                                 <h4 class="text-lg font-semibold mb-2 text-gray-800">${product.name}</h4>
                                 <p class="text-[#4f7962] font-bold mb-4">${formatPrice(product.price)}</p>
                                 <button class="w-full border border-[#2d4a3e] text-[#2d4a3e] py-2 rounded hover:bg-[#2d4a3e] hover:text-white transition">
-                                    Lihat Detail
+                                    Detail Product
                                 </button>
                             </a>
                         </div>`;
