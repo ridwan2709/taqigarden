@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Gambar - Taqi Garden</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .upload-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .preview-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        #previewImage {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            margin: 0 auto;
+        }
+        .btn-upload {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-upload:hover {
+            background-color: #45a049;
+        }
+        #uploadStatus {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Upload Gambar</h1>
+        <form id="uploadForm" class="upload-form">
+            <div class="form-group">
+                <label for="imageUpload">Pilih Gambar:</label>
+                <input type="file" id="imageUpload" accept="image/*" required>
+            </div>
+            
+            <div class="preview-container">
+                <img id="previewImage" src="#" alt="Preview Gambar">
+            </div>
+            
+            <button type="submit" class="btn-upload">Upload Gambar</button>
+            
+            <div id="uploadStatus"></div>
+        </form>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    
+    <!-- Konfigurasi Firebase -->
+    <script src="js/firebase-config.js"></script>
+    
+    <!-- Handler Upload -->
+    <script src="js/upload-handler.js"></script>
+</body>
+</html>
