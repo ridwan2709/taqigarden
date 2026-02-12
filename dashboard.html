@@ -382,6 +382,7 @@
                         newScript.type = 'module';
                         if (script.src) {
                             newScript.src = script.src;
+                            document.body.appendChild(newScript);
                         } else {
                             // For inline module scripts, we need to modify them to expose the function
                             const moduleContent = `
@@ -391,9 +392,18 @@
                                     window.initializeCollectionPage = initializeCollectionPage;
                                 }
                             `;
-                            newScript.textContent = moduleContent;
+                            try {
+                                // Try to create a new module with the content
+                                const blob = new Blob([moduleContent], { type: 'application/javascript' });
+                                const url = URL.createObjectURL(blob);
+                                newScript.src = url;
+                                document.body.appendChild(newScript);
+                                // Clean up the URL object after the script is loaded
+                                newScript.onload = () => URL.revokeObjectURL(url);
+                            } catch (e) {
+                                console.error('Error creating module from inline script:', e);
+                            }
                         }
-                        document.body.appendChild(newScript);
                     }
                 }
                 
