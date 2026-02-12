@@ -351,14 +351,25 @@ async function handleFormSubmit(e) {
             body: formData
         });
         
+        console.log('berhasil 1');
+        
+        
         const uploadResult = await uploadResponse.json();
 
+        console.log(uploadResult);
+        
+        
         if (!uploadResult.success) {
             throw new Error("Gagal upload gambar: " + uploadResult.message);
         }
 
         // STEP 2: Susun Data
         const finalImageUrl = uploadResult.imageUrl; 
+        const finalImageUrl2 = uploadResult.imageUrl2; 
+        const finalImageUrl3 = uploadResult.imageUrl3; 
+        const finalImageUrl4 = uploadResult.imageUrl4; 
+        const finalImageUrl5 = uploadResult.imageUrl5; 
+        console.log('berhasil 3');
         
         // Gunakan nilai default "" jika element tidak ditemukan agar tidak crash
         const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
@@ -368,6 +379,10 @@ async function handleFormSubmit(e) {
             category: getVal('pCategory'),
             price: Number(getVal('pPrice').replace(/\D/g, '')) || 0,
             imageUrl: finalImageUrl,
+            imageUrl2: finalImageUrl2 || '',
+            imageUrl3: finalImageUrl3 || '',
+            imageUrl4: finalImageUrl4 || '',
+            imageUrl5: finalImageUrl5 || '',
             description: getVal('pDescription'),
             light: getVal('pLight'),
             water: getVal('pWater'),
@@ -376,9 +391,11 @@ async function handleFormSubmit(e) {
             updatedAt: new Date(),
             createdAt: new Date()
         };
+console.log('berhasil4');
 
         // STEP 3: Kirim ke Firebase (Pastikan COLLECTION_PATH = "public/data/plants")
         const targetColl = collection(db, "artifacts","taqi-4a756","public", "data", "plants"); 
+        console.log('berhasil 5');
         
         if (currentEditingId) {
             // Update existing document
@@ -389,6 +406,7 @@ async function handleFormSubmit(e) {
             const docRef = await addDoc(targetColl, plantData);
             plantData.id = docRef.id;
         }
+        console.log('berhasil 6');
         
         // Get the newly added plant data
         const newPlant = {
@@ -396,6 +414,7 @@ async function handleFormSubmit(e) {
             ...plantData,
             timestamp: new Date().toISOString()
         };
+console.log('berhasil 7');
 
         // Close modal and reset form
         document.getElementById('addPlantModal').classList.add('hidden');
