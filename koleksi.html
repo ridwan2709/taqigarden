@@ -419,11 +419,43 @@
                 
                 // Handle different category formats and languages
                 const categoryMatches = {
-                    'indoor': productCategory.includes('indoor') || productCategory.includes('dalam'),
-                    'outdoor': productCategory.includes('outdoor') || productCategory.includes('luar'),
-                    'rare': productCategory.includes('rare') || productCategory.includes('langka'),
-                    'succulent': productCategory.includes('succulent') || productCategory.includes('sukulen')
-                };
+    'indoor': productCategory.includes('indoor') || productCategory.includes('dalam'),
+    'outdoor': productCategory.includes('outdoor') || productCategory.includes('luar'),
+    'rare': productCategory.includes('rare') || productCategory.includes('langka'),
+    'succulent': productCategory.includes('succulent') || productCategory.includes('sukulen'),
+    'aglaonema': productCategory.includes('aglaonema'),
+    'alocasia': productCategory.includes('alocasia'),
+    'amydrium': productCategory.includes('amydrium'),
+    'anthurium': productCategory.includes('anthurium') || productCategory.includes('anthurium hybrid'),
+    'ardisia': productCategory.includes('ardisia'),
+    'begonia': productCategory.includes('begonia'),
+    'caladium': productCategory.includes('caladium'),
+    'calathea': productCategory.includes('calathea'),
+    'costus': productCategory.includes('costus'),
+    'cercestis': productCategory.includes('cercestis') || productCategory.includes('cercestis mirabillis'),
+    'cnidoscolus': productCategory.includes('cnidoscolus') || productCategory.includes('cnidoscolus aconitifolius'),
+    'dieffenbachia': productCategory.includes('dieffenbachia'),
+    'epipremnum': productCategory.includes('epipremnum') || productCategory.includes('epipremnun'),
+    'homalomena': productCategory.includes('homalomena'),
+    'hoya': productCategory.includes('hoya'),
+    'labisia': productCategory.includes('labisia'),
+    'monstera': productCategory.includes('monstera'),
+    'musa': productCategory.includes('musa') || productCategory.includes('banana'),
+    'palm': productCategory.includes('palm'),
+    'peperomia': productCategory.includes('peperomia'),
+    'philodendron': productCategory.includes('philodendron'),
+    'piper': productCategory.includes('piper'),
+    'plumeria': productCategory.includes('plumeria'),
+    'pothos': productCategory.includes('pothos'),
+    'raphidophora': productCategory.includes('raphidophora') || productCategory.includes('raphidopora'),
+    'scindapsus': productCategory.includes('scindapsus'),
+    'schismatoglottis': productCategory.includes('schismatoglottis'),
+    'spathiphyllum': productCategory.includes('spathiphyllum') || productCategory.includes('sphathiphyllum'),
+    'syngonium': productCategory.includes('syngonium'),
+    'thaumatophyllum': productCategory.includes('thaumatophyllum'),
+    'xanthosoma': productCategory.includes('xanthosoma'),
+    'zamioculcas': productCategory.includes('zamioculcas') || productCategory.includes('zamioculcas zamifolia')
+};
                 
                 return matchesSearch && (categoryMatches[currentFilter] || false);
             });
@@ -671,7 +703,13 @@
         'outdoor': 'outdoor',
         'succulent': 'succulent',
         'flowering': 'flowering',
-        'herbs': 'herbs'
+        'herbs': 'herbs',
+        'aglaonema': 'aglaonema',
+        'alocasia': 'alocasia',
+        'monstera': 'monstera',
+        'philodendron': 'philodendron',
+        'anthurium': 'anthurium',
+        'calathea': 'calathea'
     };
  
     // Function to set the active filter and trigger filtering
@@ -706,21 +744,27 @@
             
             // Check if product matches selected filter
             if (currentFilter === 'all') return matchesSearch;
-            
+
             const productCategory = product.category?.toLowerCase() || '';
-            
+
             // Handle different category formats and languages
             const categoryMatches = {
                 'indoor': productCategory.includes('indoor') || productCategory.includes('dalam'),
                 'outdoor': productCategory.includes('outdoor') || productCategory.includes('luar'),
                 'succulent': productCategory.includes('succulent') || productCategory.includes('sukulen'),
                 'flowering': productCategory.includes('flowering') || productCategory.includes('berbunga'),
-                'herbs': productCategory.includes('herb') || productCategory.includes('rempah')
+                'herbs': productCategory.includes('herb') || productCategory.includes('rempah'),
+                'aglaonema': productCategory.includes('aglaonema'),
+                'alocasia': productCategory.includes('alocasia'),
+                'monstera': productCategory.includes('monstera'),
+                'philodendron': productCategory.includes('philodendron'),
+                'anthurium': productCategory.includes('anthurium'),
+                'calathea': productCategory.includes('calathea')
             };
-            
-            return matchesSearch && (categoryMatches[currentFilter] || false);
+
+            return matchesSearch && (categoryMatches[currentFilter] || productCategory === currentFilter);
         });
-        
+
         // Reset to first page when filters change
         currentPage = 1;
         updatePagination();
