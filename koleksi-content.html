@@ -319,11 +319,19 @@ async function handleFormSubmit(e) {
         // STEP 3: Kirim ke Firebase (Pastikan COLLECTION_PATH = "public/data/plants")
         const targetColl = collection(db, "artifacts","taqi-4a756","public", "data", "plants"); 
         
-        const docRef = await addDoc(targetColl, plantData);
+        if (currentEditingId) {
+            // Update existing document
+            await updateDoc(doc(db, 'artifacts/taqi-4a756/public/data/plants', currentEditingId), plantData);
+            plantData.id = currentEditingId;
+        } else {
+            // Add a new document with a generated id
+            const docRef = await addDoc(targetColl, plantData);
+            plantData.id = docRef.id;
+        }
         
         // Get the newly added plant data
         const newPlant = {
-            id: docRef.id,
+            id: plantData.id,
             ...plantData,
             timestamp: new Date().toISOString()
         };
@@ -333,14 +341,15 @@ async function handleFormSubmit(e) {
         form.reset();
         
         // Show success message
-        alert('Sukses');
+        alert(currentEditingId ? 'Data tanaman berhasil diperbarui' : 'Tanaman berhasil ditambahkan');
         
-        // Add the new plant to the UI immediately
-        const productGrid = document.getElementById('productGrid');
-        if (productGrid) {
-            const productElement = createProductElement(newPlant);
-            productGrid.insertAdjacentHTML('afterbegin', productElement);
-        }
+        // Reset editing state
+        currentEditingId = null;
+        document.getElementById('modalTitle').textContent = 'Tambah Tanaman Baru';
+        submitButton.innerHTML = '<i class="fas fa-save mr-2"></i> Simpan Tanaman';
+        
+        // Reload the plants to show updated list
+        loadPlants();
 
     } catch (err) {
         // alert("Gagal: " + err.message);
@@ -367,31 +376,49 @@ async function handleFormSubmit(e) {
     }
     
     // Edit plant function
-    function editPlant(plantId) {
-        currentEditingId = plantId;
-        const plant = products.find(p => p.id === plantId);
+    // Edit plant function
+function editPlant(plantId) {
+    currentEditingId = plantId;
+    const plant = products.find(p => p.id === plantId);
+    
+    if (plant) {
+        // Get the modal form
+        const form = document.getElementById('addPlantForm');
+        if (!form) {
+            console.error('Form not found');
+            return;
+        }
+
+        // Fill the form with plant data
+        const setValue = (id, value) => {
+            const element = document.getElementById(id);
+            if (element) element.value = value || '';
+        };
+
+        setValue('pName', plant.name);
+        setValue('pCategory', plant.category || 'indoor');
+        setValue('pPrice', plant.price ? plant.price.toString() : '');
+        setValue('pLight', plant.light);
+        setValue('pWater', plant.water);
+        setValue('pHumidity', plant.humidity);
+        setValue('pToxicity', plant.toxicity);
+        setValue('pDescription', plant.description);
         
-        if (plant) {
-            // Fill the form with plant data
-            document.getElementById('pName').value = plant.name || '';
-            document.getElementById('pCategory').value = plant.category || 'indoor';
-            document.getElementById('pPrice').value = plant.price ? plant.price.toString() : '';
-            document.getElementById('pImg').value = plant.imageUrl || '';
-            document.getElementById('pLight').value = plant.light || '';
-            document.getElementById('pWater').value = plant.water || '';
-            document.getElementById('pHumidity').value = plant.humidity || '';
-            document.getElementById('pToxicity').value = plant.toxicity || '';
-            document.getElementById('pDescription').value = plant.description || '';
-            
-            // Update UI
-            document.getElementById('modalTitle').textContent = 'Edit Tanaman';
-            const submitBtn = document.querySelector('#addPlantForm button[type="submit"]');
+        // Update UI
+        document.getElementById('modalTitle').textContent = 'Edit Tanaman';
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
             submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Simpan Perubahan';
-            
-            // Show the modal
-            document.getElementById('addPlantModal').classList.remove('hidden');
+        }
+        
+        // Show the modal
+        const modal = document.getElementById('addPlantModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.scrollTo(0, 0);
         }
     }
+}
     
     // Render products to the DOM
     function renderProducts(products) {
