@@ -35,17 +35,17 @@
             <h3 class="text-xl font-bold brand-font text-[#2d4a3e]" id="modalTitle">Tambah Tanaman Baru</h3>
             <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
         </div>
-        <form id="addPlantForm" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+        <form id="addPlantForm" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto" enctype="multipart/form-data">
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nama Tanaman</label>
-                    <input type="text" id="pName" required 
+                    <input type="text" id="pName" name="pName" required 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                    <select id="pCategory" required
+                    <select id="pCategory" name="pCategory" required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
                         <option value="aglaonema">Aglaonema</option>
                         <option value="alocasia">Alocasia</option>
@@ -84,31 +84,33 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Harga (USD)</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-2.5 text-gray-500">Rp</span>
-                        <input type="text" id="pPrice" placeholder="Contoh: 150000" required 
+                        <span class="absolute left-3 top-2.5 text-gray-500">$</span>
+                        <input type="text" id="pPrice" name="pPrice" placeholder="Contoh: 150" required 
                             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none"
                             oninput="this.value = this.value.replace(/\D/g, '')">
                     </div>
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">URL Gambar</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Unggah Gambar</label>
                     <div class="flex items-center space-x-2">
-                        <input type="url" id="pImg" placeholder="https://example.com/image.jpg" required 
-                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
-                        <button type="button" class="px-3 py-2 bg-gray-100 rounded-lg text-gray-600 hover:bg-gray-200"
-                            onclick="document.getElementById('pImg').value = ''">
-                            <i class="fas fa-times"></i>
-                        </button>
+                        <input type="file" id="pImgFile" name="plantImage" accept="image/*" required
+                            class="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-lg file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-[#2d4a3e] file:text-white
+                                hover:file:bg-[#3a5e50]
+                                focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2">
                     </div>
-                    <p class="mt-1 text-xs text-gray-500">Masukkan URL gambar yang valid (contoh: .jpg, .png)</p>
+                    <p class="mt-1 text-xs text-gray-500">Format yang didukung: JPG, PNG, GIF (maks. 5MB)</p>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                    <textarea id="pDescription" rows="3" required
+                    <textarea id="pDescription" name="pDescription" rows="3" required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none"
                         placeholder="Deskripsi tanaman..."></textarea>
                 </div>
@@ -121,7 +123,7 @@
                         <div class="w-8 h-8 rounded-full bg-[#E8F5E9] flex-shrink-0 flex items-center justify-center text-[#2d4a3e]">
                             <i class="fas fa-sun"></i>
                         </div>
-                            <select id="pLight" required
+                            <select id="pLight" name="pLight" required
                                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
                                 <option value="">Pilih kebutuhan cahaya</option>
                                 <option value="Rendah (teduh)">Rendah (teduh)</option>
@@ -136,7 +138,7 @@
                         <div class="w-8 h-8 rounded-full bg-[#E8F5E9] flex-shrink-0 flex items-center justify-center text-[#2d4a3e]">
                             <i class="fas fa-tint"></i>
                         </div>
-                            <select id="pWater" required
+                            <select id="pWater" name="pWater" required
                                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
                                 <option value="">Pilih kebutuhan air</option>
                                 <option value="Sedikit (biarkan kering di antara penyiraman)">Sedikit (biarkan kering di antara penyiraman)</option>
@@ -151,7 +153,7 @@
                         <div class="w-8 h-8 rounded-full bg-[#E8F5E9] flex-shrink-0 flex items-center justify-center text-[#2d4a3e]">
                             <i class="fas fa-wind"></i>
                         </div>
-                            <select id="pHumidity" required
+                            <select id="pHumidity" name="pHumidity" required
                                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
                                 <option value="">Pilih tingkat kelembapan</option>
                                 <option value="Rendah (kering)">Rendah (kering)</option>
@@ -166,7 +168,7 @@
                         <div class="w-8 h-8 rounded-full bg-[#E8F5E9] flex-shrink-0 flex items-center justify-center text-[#2d4a3e]">
                             <i class="fas fa-exclamation-triangle"></i>
                         </div>
-                            <select id="pToxicity" required
+                            <select id="pToxicity" name="pToxicity" required
                                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent outline-none">
                                 <option value="Aman untuk hewan peliharaan">Aman untuk hewan peliharaan</option>
                                 <option value="Beracun jika tertelan">Beracun jika tertelan</option>
@@ -192,16 +194,9 @@
 <script type="module">
     // Import Firebase modules
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-    import { 
-        getFirestore, 
-        collection, 
-        addDoc, 
-        query, 
-        orderBy, 
-        onSnapshot,
-        deleteDoc,
-        doc,
-        updateDoc
+     import { 
+        getFirestore, collection, addDoc, query, orderBy, 
+        onSnapshot, deleteDoc, doc, updateDoc 
     } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
     import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
     
@@ -274,61 +269,75 @@
     }
     
     // Handle form submission
-    async function handleFormSubmit(e) {
-        e.preventDefault();
-        const form = e.target;
-        
-        // Prevent multiple submissions
-        if (form.dataset.submitting === 'true') return;
-        form.dataset.submitting = 'true';
-        
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.innerHTML;
-        
-        try {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-            
-            const plantData = {
-                name: document.getElementById('pName').value.trim(),
-                category: document.getElementById('pCategory').value,
-                price: parseInt(document.getElementById('pPrice').value.replace(/\D/g, '') || '0'),
-                imageUrl: document.getElementById('pImg').value.trim(),
-                light: document.getElementById('pLight').value,
-                water: document.getElementById('pWater').value,
-                humidity: document.getElementById('pHumidity').value,
-                toxicity: document.getElementById('pToxicity').value,
-                description: document.getElementById('pDescription').value.trim(),
-                updatedAt: new Date().toISOString()
-            };
+  // Sesuaikan path koleksi sesuai screenshot kamu
+const COLLECTION_PATH = "public/data/plants"; 
 
-            if (!plantData.name || !plantData.imageUrl) {
-                throw new Error('Nama tanaman dan URL gambar harus diisi');
-            }
+async function handleFormSubmit(e) {
+    e.preventDefault();
+    console.log("1. Form submit dimulai"); // DEBUG
+    
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
 
-            if (currentEditingId) {
-                // Update existing document
-                await updateDoc(doc(db, 'artifacts/taqi-4a756/public/data/plants', currentEditingId), plantData);
-                currentEditingId = null;
-            } else {
-                // Add new document
-                plantData.createdAt = new Date().toISOString();
-                await addDoc(collection(db, 'artifacts/taqi-4a756/public/data/plants'), plantData);
-            }
-            
-            // Reset form and close modal
-            form.reset();
-            document.getElementById('addPlantModal').classList.add('hidden');
-            
-        } catch (error) {
-            console.error('Error:', error);
-            alert(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-            form.dataset.submitting = 'false';
+    try {
+        // STEP 1: Upload ke PHP
+        console.log("2. Mencoba upload gambar ke PHP..."); // DEBUG
+        const formData = new FormData(form);
+        const uploadResponse = await fetch('upload_plant.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const uploadResult = await uploadResponse.json();
+        console.log("3. Respon PHP:", uploadResult); // DEBUG
+
+        if (!uploadResult.success) {
+            throw new Error("Gagal upload gambar: " + uploadResult.message);
         }
+
+        // STEP 2: Susun Data (Pastikan ID Input Benar)
+        console.log("4. Menyusun data untuk Firestore..."); // DEBUG
+        const finalImageUrl = uploadResult.imageUrl; 
+        
+        // Gunakan nilai default "" jika element tidak ditemukan agar tidak crash
+        const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
+
+        const plantData = {
+            name: getVal('pName'),
+            category: getVal('pCategory'),
+            price: Number(getVal('pPrice').replace(/\D/g, '')) || 0,
+            imageUrl: finalImageUrl,
+            description: getVal('pDescription'),
+            light: getVal('pLight'),
+            water: getVal('pWater'),
+            humidity: getVal('pHumidity'),
+            toxicity: getVal('pToxicity'),
+            updatedAt: new Date(),
+            createdAt: new Date()
+        };
+
+        console.log("5. Data siap kirim:", plantData); // DEBUG
+
+        // STEP 3: Kirim ke Firebase (Pastikan COLLECTION_PATH = "public/data/plants")
+        const targetColl = collection(db, "artifacts","taqi-4a756","public", "data", "plants"); 
+        
+        console.log("6. Mengirim ke Firebase..."); // DEBUG
+        const docRef = await addDoc(targetColl, plantData);
+        
+        console.log("7. SUKSES! ID Dokumen:", docRef.id); // DEBUG
+        alert("Berhasil disimpan dengan ID: " + docRef.id);
+        
+        form.reset();
+        location.reload();
+
+    } catch (err) {
+        console.error("🚨 ERROR TERJADI:", err);
+        alert("Gagal: " + err.message);
+    } finally {
+        submitBtn.disabled = false;
     }
+}
     
     // Delete plant function
     async function deletePlant(plantId) {
