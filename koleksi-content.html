@@ -274,15 +274,16 @@ const COLLECTION_PATH = "public/data/plants";
 
 async function handleFormSubmit(e) {
     e.preventDefault();
-    console.log("1. Form submit dimulai"); // DEBUG
-    
     const form = e.target;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
 
     try {
         // STEP 1: Upload ke PHP
-        console.log("2. Mencoba upload gambar ke PHP..."); // DEBUG
         const formData = new FormData(form);
         const uploadResponse = await fetch('upload_plant.php', {
             method: 'POST',
@@ -290,14 +291,12 @@ async function handleFormSubmit(e) {
         });
         
         const uploadResult = await uploadResponse.json();
-        console.log("3. Respon PHP:", uploadResult); // DEBUG
 
         if (!uploadResult.success) {
             throw new Error("Gagal upload gambar: " + uploadResult.message);
         }
 
-        // STEP 2: Susun Data (Pastikan ID Input Benar)
-        console.log("4. Menyusun data untuk Firestore..."); // DEBUG
+        // STEP 2: Susun Data
         const finalImageUrl = uploadResult.imageUrl; 
         
         // Gunakan nilai default "" jika element tidak ditemukan agar tidak crash
@@ -317,25 +316,39 @@ async function handleFormSubmit(e) {
             createdAt: new Date()
         };
 
-        console.log("5. Data siap kirim:", plantData); // DEBUG
-
         // STEP 3: Kirim ke Firebase (Pastikan COLLECTION_PATH = "public/data/plants")
         const targetColl = collection(db, "artifacts","taqi-4a756","public", "data", "plants"); 
         
-        console.log("6. Mengirim ke Firebase..."); // DEBUG
         const docRef = await addDoc(targetColl, plantData);
         
-        console.log("7. SUKSES! ID Dokumen:", docRef.id); // DEBUG
-        alert("Berhasil disimpan dengan ID: " + docRef.id);
-        
+        // Get the newly added plant data
+        const newPlant = {
+            id: docRef.id,
+            ...plantData,
+            timestamp: new Date().toISOString()
+        };
+
+        // Close modal and reset form
+        document.getElementById('addPlantModal').classList.add('hidden');
         form.reset();
-        location.reload();
+        
+        // Show success message
+        alert('Sukses');
+        
+        // Add the new plant to the UI immediately
+        const productGrid = document.getElementById('productGrid');
+        if (productGrid) {
+            const productElement = createProductElement(newPlant);
+            productGrid.insertAdjacentHTML('afterbegin', productElement);
+        }
 
     } catch (err) {
-        console.error("🚨 ERROR TERJADI:", err);
-        alert("Gagal: " + err.message);
+        // alert("Gagal: " + err.message);
     } finally {
-        submitBtn.disabled = false;
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        }
     }
 }
     
@@ -433,9 +446,9 @@ async function handleFormSubmit(e) {
     
     // Helper functions
     function formatPrice(price) {
-        return new Intl.NumberFormat('id-ID', {
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'IDR',
+            currency: 'USD',
             maximumFractionDigits: 0
         }).format(price);
     }
