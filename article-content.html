@@ -158,7 +158,7 @@
         onSnapshot, deleteDoc, doc, updateDoc 
     } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
     import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js';
     
     const firebaseConfig = {
         apiKey: "AIzaSyA51F2pPZUWmdOaYqsihD78LTrvnXDqXn4",
@@ -175,7 +175,7 @@
     const storage = getStorage(app);
     
     // Path koleksi (sesuai kode Anda: atricles)
-    const COLLECTION_PATH = 'artifacts/taqi-4a756/public/data/atricles';
+    const COLLECTION_PATH = 'articles';
 
     let currentEditingId = null;
     let articles = [];
@@ -185,16 +185,19 @@
 
     // --- Core Functions ---
 
-    function setupAuthListener() {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loadArticles();
-                setupFormHandlers();
-                setupModalHandlers();
-                setupPagination();
-            } else {
-                window.location.href = 'login.html';
-            }
+    async function setupAuthListener() {
+        return new Promise((resolve) => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    loadArticles();
+                    setupFormHandlers();
+                    setupModalHandlers();
+                    setupPagination();
+                    resolve();
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
         });
     }
 
@@ -263,16 +266,12 @@
                 <div class="relative w-full">
                     <img src="${e.target.result}" alt="Preview" class="max-h-48 mx-auto rounded-lg">
                     <button type="button" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center" 
-                            onclick="event.stopPropagation(); document.getElementById('articleImage').value = ''; 
-                                     articleImageUrl = ''; 
-                                     document.getElementById('imagePreview').innerHTML = `
-                                         <div class='text-center'>
-                                             <i class='fas fa-image text-4xl text-gray-400 mb-2'></i>
-                                             <p class='text-sm text-gray-500'>Klik untuk mengunggah gambar</p>
-                                             <p class='text-xs text-gray-400'>Rekomendasi: 800x450px (16:9)</p>
-                                         </div>`;">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
+        onclick="event.stopPropagation(); document.getElementById('articleImage').value = ''; 
+                 articleImageUrl = ''; 
+                 document.getElementById('imagePreview').innerHTML = 
+                 '<div class=\\'text-center\\'><i class=\\'fas fa-image text-4xl text-gray-400 mb-2\\'></i><p class=\\'text-sm text-gray-500\\'>Klik untuk mengunggah gambar</p><p class=\\'text-xs text-gray-400\\'>Rekomendasi: 800x450px (16:9)</p></div>';">
+    <i class="fas fa-times text-xs"></i>
+</button>
                 </div>`;
             document.getElementById('imageError').classList.add('hidden');
         };
@@ -323,12 +322,12 @@
                     <button type="button" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center" 
                             onclick="event.stopPropagation(); document.getElementById('articleImage').value = ''; 
                                      articleImageUrl = ''; 
-                                     document.getElementById('imagePreview').innerHTML = `
-                                         <div class='text-center'>
-                                             <i class='fas fa-image text-4xl text-gray-400 mb-2'></i>
-                                             <p class='text-sm text-gray-500'>Klik untuk mengunggah gambar</p>
-                                             <p class='text-xs text-gray-400'>Rekomendasi: 800x450px (16:9)</p>
-                                         </div>`;">
+                                     document.getElementById('imagePreview').innerHTML = 
+                                         '<div class=\'text-center\'>\
+                                             <i class=\'fas fa-image text-4xl text-gray-400 mb-2\'></i>\
+                                             <p class=\'text-sm text-gray-500\'>Klik untuk mengunggah gambar</p>\
+                                             <p class=\'text-xs text-gray-400\'>Rekomendasi: 800x450px (16:9)</p>\
+                                         </div>';">
                         <i class="fas fa-times text-xs"></i>
                     </button>
                 </div>`;
